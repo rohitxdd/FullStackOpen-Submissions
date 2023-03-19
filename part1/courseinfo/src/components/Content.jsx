@@ -1,9 +1,8 @@
 import React from "react";
+import Part from "./Part";
 
 export default function Content({ contentArray }) {
   return contentArray.map((content) => (
-    <p key={content.id}>
-      {content.name} {content.exercises}
-    </p>
+    <Part key={content.id} name={content.name} exercise={content.exercises} />
   ));
 }
