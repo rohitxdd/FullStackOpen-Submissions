@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
-import axios from "axios";
+import contactsService from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -27,10 +27,36 @@ const App = () => {
         (person) => person.name.toLowerCase() === newName.toLowerCase()
       );
       if (isExist) {
-        alert(`${newName} is already added to phonebook`);
+        const updateConsent = confirm(
+          `${newName} is already added to phonebook, replace the old number with a new one?`
+        );
+        if (updateConsent) {
+          const { id } = isExist;
+          const updatedContact = { ...isExist, number: newNumber };
+          contactsService
+            .update(id, updatedContact)
+            .then((response) => {
+              setPersons((prev) =>
+                prev.map((person) => (person.id !== id ? person : response))
+              );
+              setNewName("");
+              setNewNumber("");
+            })
+            .catch((e) => console.log(e));
+        }
         return;
       }
-      setPersons((prev) => [...prev, { name: newName, number: newNumber }]);
+      const newContact = {
+        name: newName,
+        number: newNumber,
+      };
+
+      contactsService
+        .create(newContact)
+        .then((res) => {
+          setPersons(persons.concat(res));
+        })
+        .catch((error) => console.log(error));
     }
     setNewNumber("");
     setNewName("");
@@ -41,11 +67,24 @@ const App = () => {
     setFilterText(value);
   }
 
+  function handleDelete(person) {
+    const { name, id } = person;
+    const consent = confirm(`Delete ${name} ?`);
+    if (consent) {
+      contactsService
+        .deleteContact(id)
+        .then(() => {
+          setPersons((prev) => prev.filter((person) => person.id !== id));
+        })
+        .catch((e) => console.log(e.message));
+    }
+  }
+
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
+    contactsService
+      .getAll()
       .then((response) => {
-        setPersons(response.data);
+        setPersons(response);
       })
       .catch((e) => {
         console.log(e);
@@ -69,7 +108,7 @@ const App = () => {
         setNewNumber={setNewNumber}
       />
       <h2>Numbers</h2>
-      <Persons filteredPersons={filteredPersons} />
+      <Persons filteredPersons={filteredPersons} handleDelete={handleDelete} />
     </div>
   );
 };

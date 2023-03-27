@@ -1,4 +1,4 @@
-const Persons = ({ filteredPersons }) => {
+const Persons = ({ filteredPersons, handleDelete }) => {
   return (
     <>
       {filteredPersons.length > 0 ? (
@@ -6,6 +6,7 @@ const Persons = ({ filteredPersons }) => {
           {filteredPersons.map((person) => (
             <li key={person.name}>
               {person.name} {person.number}
+              <button onClick={()=> handleDelete(person)}>delete</button>
             </li>
           ))}
         </ul>
