@@ -3,12 +3,19 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import contactsService from "./services/persons";
+import Notification from "./components/Notification";
+
+const initialMsgObj = {
+  message: "",
+  classStr: "",
+};
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newNumber, setNewNumber] = useState("");
   const [newName, setNewName] = useState("");
   const [filterText, setFilterText] = useState("");
+  const [messageObj, setMessageObj] = useState(initialMsgObj);
 
   const filteredPersons = filterText.trim()
     ? getFilteredArr(persons, filterText)
@@ -39,6 +46,13 @@ const App = () => {
               setPersons((prev) =>
                 prev.map((person) => (person.id !== id ? person : response))
               );
+              setMessageObj({
+                message: `Updated ${newName}`,
+                classStr: "success",
+              });
+              setTimeout(() => {
+                setMessageObj(initialMsgObj);
+              }, 5000);
               setNewName("");
               setNewNumber("");
             })
@@ -46,6 +60,7 @@ const App = () => {
         }
         return;
       }
+
       const newContact = {
         name: newName,
         number: newNumber,
@@ -55,6 +70,13 @@ const App = () => {
         .create(newContact)
         .then((res) => {
           setPersons(persons.concat(res));
+          setMessageObj({
+            message: `Added ${newName}`,
+            classStr: "success",
+          });
+          setTimeout(() => {
+            setMessageObj(initialMsgObj);
+          }, 5000);
         })
         .catch((error) => console.log(error));
     }
@@ -76,7 +98,19 @@ const App = () => {
         .then(() => {
           setPersons((prev) => prev.filter((person) => person.id !== id));
         })
-        .catch((e) => console.log(e.message));
+        .catch((e) => {
+          if (e.response.status === 404) {
+            setMessageObj({
+              message: `Information of ${name} has already been removed from server`,
+              classStr: "error",
+            });
+            setTimeout(() => {
+              setMessageObj(initialMsgObj);
+            }, 5000);
+            setPersons((prev) => prev.filter((person) => person.id !== id));
+          }
+          console.log(e.message);
+        });
     }
   }
 
@@ -87,7 +121,10 @@ const App = () => {
         setPersons(response);
       })
       .catch((e) => {
-        console.log(e);
+        setMessageObj({
+          message: "Cant Connect to Server",
+          classStr: "error",
+        });
         setPersons([]);
       });
   }, []);
@@ -95,6 +132,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification messageObj={messageObj} />
       <Filter
         filterValue={filterText}
         filterChangeHandler={handleFilterChange}
