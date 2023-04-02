@@ -2,9 +2,12 @@ const express = require("express");
 const app = express();
 let personsData = require("./data.json");
 const morgan = require("morgan");
+const cors = require("cors");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cors());
+app.use(express.static("build"));
 
 morgan.token("payload", function (req, res) {
   return req.method === "POST" ? JSON.stringify(req.body) : null;
@@ -26,7 +29,7 @@ app.use(
 );
 
 app.get("/api/persons", (req, res) => {
-  res.json(personsData);
+  res.status(200).json(personsData);
 });
 
 app.post("/api/persons", (req, res) => {
@@ -40,7 +43,7 @@ app.post("/api/persons", (req, res) => {
       return res.status(403).json({ error: "name must be unique" });
     } else {
       const id = Math.floor(Math.random() * 9999999);
-      const newContact = {id, name, number}
+      const newContact = { id, name, number };
       personsData.push(newContact);
       return res.status(201).json(newContact);
     }
@@ -89,6 +92,8 @@ function errorHandler(err, req, res, next) {
 app.use(UnknownPathHandler);
 app.use(errorHandler);
 
-app.listen(3000, () => {
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
   console.log("listening");
 });
