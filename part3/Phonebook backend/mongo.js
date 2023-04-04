@@ -51,6 +51,6 @@ function start() {
     console.log("Connection Successful");
     start();
   } catch (e) {
-    console.log(error);
+    console.log(e);
   }
 })();

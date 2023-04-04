@@ -12,7 +12,11 @@ mongoose
   .catch((e) => console.log("connection failed", e.message));
 
 const personSchema = new mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    minLength: 3,
+    require: true,
+  },
   number: String,
 });
 

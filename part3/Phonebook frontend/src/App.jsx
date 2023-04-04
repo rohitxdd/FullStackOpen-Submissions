@@ -78,7 +78,15 @@ const App = () => {
             setMessageObj(initialMsgObj);
           }, 5000);
         })
-        .catch((error) => console.log(error));
+        .catch((error) => {
+          setMessageObj({
+            message: `${error.response?.data?.error}`,
+            classStr: "error",
+          });
+          setTimeout(() => {
+            setMessageObj(initialMsgObj);
+          }, 5000);
+        });
     }
     setNewNumber("");
     setNewName("");

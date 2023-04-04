@@ -9,7 +9,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 app.use(express.static("build"));
 
-morgan.token("payload", function (req, res) {
+morgan.token("payload", function (req) {
   return req.method === "POST" ? JSON.stringify(req.body) : null;
 });
 
@@ -40,7 +40,7 @@ app.get("/api/persons", (req, res) => {
     });
 });
 
-app.post("/api/persons", (req, res) => {
+app.post("/api/persons", (req, res, next) => {
   const { name, number } = req.body;
   if (name && number) {
     const newContact = new Person({
@@ -52,14 +52,15 @@ app.post("/api/persons", (req, res) => {
       .then((result) => {
         return res.status(201).json(result.toJSON());
       })
-      .catch((e) => console.log(e.message));
+      .catch((e) => {
+        next(e);
+      });
   } else {
     return res.sendStatus(400);
   }
 });
 
 app.get("/api/persons/:id", (req, res, next) => {
-  console.log(req.params.id);
   const { id } = req.params;
   Person.findById(id)
     .then((person) => {
@@ -70,16 +71,14 @@ app.get("/api/persons/:id", (req, res, next) => {
       }
     })
     .catch((error) => {
-      console.log(error);
       next(error);
     });
 });
 
-app.delete("/api/persons/:id", (req, res) => {
+app.delete("/api/persons/:id", (req, res, next) => {
   const { id } = req.params;
   Person.findByIdAndDelete(id)
     .then((result) => {
-      console.log(result);
       if (result) {
         res.sendStatus(204);
       } else {
@@ -87,7 +86,6 @@ app.delete("/api/persons/:id", (req, res) => {
       }
     })
     .catch((e) => {
-      console.log(e);
       next(e);
     });
 });
@@ -102,7 +100,7 @@ app.put("/api/persons/:id", (req, res, next) => {
     .catch((e) => next(e));
 });
 
-app.get("/info", (req, res) => {
+app.get("/info", (req, res, next) => {
   Person.find({})
     .then((result) => {
       res.writeHead(200, { "content-type": "text/plain" });
@@ -118,11 +116,13 @@ function UnknownPathHandler(req, res) {
 }
 
 function errorHandler(err, req, res, next) {
-  console.log(err.message, err);
   if (err.name === "CastError") {
-    return response.status(400).send({ error: "malformatted id" });
+    return res.status(400).send({ error: "malformatted id" });
+  } else if (err.name === "ValidationError") {
+    return res.status(400).json({ error: err.message });
   }
   res.status(500).json({ message: "Something went wrong" });
+  next();
 }
 
 app.use(UnknownPathHandler);
