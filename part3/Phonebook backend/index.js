@@ -1,8 +1,8 @@
 const express = require("express");
 const app = express();
-let personsData = require("./data.json");
 const morgan = require("morgan");
 const cors = require("cors");
+const Person = require("./models/persons");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -29,55 +29,88 @@ app.use(
 );
 
 app.get("/api/persons", (req, res) => {
-  res.status(200).json(personsData);
+  Person.find({})
+    .then((result) => {
+      const arrOfPersons = result.map((e) => e.toJSON());
+      res.status(200).json(arrOfPersons);
+    })
+    .catch((e) => {
+      console.log(e.message);
+      res.status(500).json([]);
+    });
 });
 
 app.post("/api/persons", (req, res) => {
-  console.log(req.method);
   const { name, number } = req.body;
   if (name && number) {
-    const isNameExist = personsData.find(
-      (person) => person.name === name.trim()
-    );
-    if (isNameExist) {
-      return res.status(403).json({ error: "name must be unique" });
-    } else {
-      const id = Math.floor(Math.random() * 9999999);
-      const newContact = { id, name, number };
-      personsData.push(newContact);
-      return res.status(201).json(newContact);
-    }
+    const newContact = new Person({
+      name: name,
+      number: number,
+    });
+    newContact
+      .save()
+      .then((result) => {
+        return res.status(201).json(result.toJSON());
+      })
+      .catch((e) => console.log(e.message));
   } else {
     return res.sendStatus(400);
   }
 });
 
-app.get("/api/persons/:id", (req, res) => {
+app.get("/api/persons/:id", (req, res, next) => {
   console.log(req.params.id);
   const { id } = req.params;
-  const person = personsData.find((e) => e.id === Number(id));
-  if (person) {
-    return res.status(200).json(person);
-  } else {
-    return res.sendStatus(404);
-  }
+  Person.findById(id)
+    .then((person) => {
+      if (person) {
+        res.json(person);
+      } else {
+        res.sendStatus(404);
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      next(error);
+    });
 });
 
 app.delete("/api/persons/:id", (req, res) => {
-  try {
-    const { id } = req.params;
-    personsData = personsData.filter((e) => e.id !== Number(id));
-    res.sendStatus(204);
-  } catch (e) {
-    throw e;
-  }
+  const { id } = req.params;
+  Person.findByIdAndDelete(id)
+    .then((result) => {
+      console.log(result);
+      if (result) {
+        res.sendStatus(204);
+      } else {
+        res.sendStatus(404);
+      }
+    })
+    .catch((e) => {
+      console.log(e);
+      next(e);
+    });
+});
+
+app.put("/api/persons/:id", (req, res, next) => {
+  const { id } = req.params;
+  const newObj = req.body;
+  delete newObj.id;
+
+  Person.findByIdAndUpdate(id, newObj, { new: true })
+    .then((result) => res.status(200).json(result.toJSON()))
+    .catch((e) => next(e));
 });
 
 app.get("/info", (req, res) => {
-  res.writeHead(200, { "content-type": "text/plain" });
-  res.write(`Phonebook had info for ${personsData.length} people\n`);
-  res.write(new Date().toString());
-  res.end();
+  Person.find({})
+    .then((result) => {
+      res.writeHead(200, { "content-type": "text/plain" });
+      res.write(`Phonebook had info for ${result.length} people\n`);
+      res.write(new Date().toString());
+      res.end();
+    })
+    .catch((e) => next(e));
 });
 
 function UnknownPathHandler(req, res) {
@@ -86,6 +119,9 @@ function UnknownPathHandler(req, res) {
 
 function errorHandler(err, req, res, next) {
   console.log(err.message, err);
+  if (err.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
   res.status(500).json({ message: "Something went wrong" });
 }
 
@@ -95,5 +131,5 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log("listening");
+  console.log(`Listening at Port ${PORT}`);
 });
