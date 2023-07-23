@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+require("express-async-errors");
 const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -10,7 +11,10 @@ const {
   errorHandler,
 } = require("./utils/middleware");
 
-const URI = process.env.MONGO_URI;
+let URI = process.env.MONGO_URI;
+if (process.env.NODE_ENV === "test") {
+  URI = process.env.MONGO_URI_TEST;
+}
 mongoose.connect(URI);
 app.use(cors());
 app.use(express.json());
