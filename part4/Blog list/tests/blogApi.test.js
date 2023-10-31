@@ -51,7 +51,7 @@ test("when like prop is not supplied it will default to zero", async () => {
   expect(result.body.likes).toBe(0);
 });
 
-test("Expect 400 when title or url missing in post data", async () => {
+test("Expect 422 when title or url missing in post data", async () => {
   const postData = {
     author: "xd",
     url: "example",
@@ -60,8 +60,8 @@ test("Expect 400 when title or url missing in post data", async () => {
     title: "sampledasdasd",
     author: "xd",
   };
-  await api.post("/api/blogs").send(postData).expect(400);
-  await api.post("/api/blogs").send(_postData).expect(400);
+  await api.post("/api/blogs").send(postData).expect(422);
+  await api.post("/api/blogs").send(_postData).expect(422);
 });
 
 describe("deletion of a blog", () => {
