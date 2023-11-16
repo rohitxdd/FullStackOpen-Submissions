@@ -62,3 +62,7 @@ describe("User creation", () => {
     await api.post("/api/users").send(duplicateUser).expect(422);
   });
 });
+
+afterAll(async () => {
+  await mongoose.connection.close();
+});
