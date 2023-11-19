@@ -1,6 +1,9 @@
+const { SECRET } = require("../utils/config");
 const blogRouter = require("express").Router();
 const Blog = require("../models/blogModel");
-const user = require("../models/userModel");
+const User = require("../models/userModel");
+const jwt = require("jsonwebtoken");
+const { userExtractor } = require("../utils/middleware");
 
 blogRouter.get("/", async (request, response) => {
   const res = await Blog.find({}).populate("user");
@@ -9,21 +12,27 @@ blogRouter.get("/", async (request, response) => {
 
 blogRouter.post("/", async (request, response) => {
   const blog = new Blog(request.body);
-  const users = await user.find({});
-  if (users) {
-    const id = users[0].id;
+  const token = request.token;
+  const decodedToken = jwt.verify(token, SECRET);
+  console.log({ decodedToken });
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: "token invalid" });
+  }
+
+  const user = await User.findById(decodedToken.id);
+  if (user) {
     const newBlog = new Blog({
       title: blog.title,
       author: blog.author,
       url: blog.url,
       likes: blog.likes,
-      user: id,
+      user: user.id,
     });
 
     const result = await newBlog.save();
-    if(result){
-      users[0].blogs.push(result.id)
-      await users[0].save()
+    if (result) {
+      user.blogs.push(result.id);
+      await user.save();
     }
     return response.status(201).json(result);
   } else {
@@ -31,12 +40,16 @@ blogRouter.post("/", async (request, response) => {
   }
 });
 
-blogRouter.delete("/:id", async (request, response) => {
-  const res = await Blog.findByIdAndRemove(request.params.id);
-  if (res) {
-    return response.status(204).end();
+blogRouter.delete("/:id", userExtractor, async (request, response) => {
+  const blog = await Blog.findById(request.params.id);
+  if (blog && blog.user.toString() === request.userid) {
+    const res = await Blog.findByIdAndRemove(request.params.id);
+    if (res) {
+      return response.status(204).end();
+    }
+    response.status(404).end();
   }
-  response.status(404).end();
+  return response.status(403).json({ error: "unauthorized access" });
 });
 
 blogRouter.put("/:id", async (request, response) => {
