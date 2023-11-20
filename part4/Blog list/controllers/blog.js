@@ -14,7 +14,6 @@ blogRouter.post("/", async (request, response) => {
   const blog = new Blog(request.body);
   const token = request.token;
   const decodedToken = jwt.verify(token, SECRET);
-  console.log({ decodedToken });
   if (!decodedToken.id) {
     return response.status(401).json({ error: "token invalid" });
   }
@@ -42,22 +41,32 @@ blogRouter.post("/", async (request, response) => {
 
 blogRouter.delete("/:id", userExtractor, async (request, response) => {
   const blog = await Blog.findById(request.params.id);
-  if (blog && blog.user.toString() === request.userid) {
+  if (!blog) {
+    return response.status(404).json({ message: "not found" })
+  }
+  if (blog.user.toString() === request.userid) {
     const res = await Blog.findByIdAndRemove(request.params.id);
     if (res) {
       return response.status(204).end();
     }
-    response.status(404).end();
+    return response.status(404).end();
   }
   return response.status(403).json({ error: "unauthorized access" });
 });
 
-blogRouter.put("/:id", async (request, response) => {
-  const res = await Blog.findByIdAndUpdate(request.params.id, request.body, {
-    new: true,
-  });
-  if (res) {
-    return response.status(200).end();
+blogRouter.put("/:id", userExtractor, async (request, response) => {
+  const blog = await Blog.findById(request.params.id);
+  if (blog) {
+    if (blog.user.toString() === request.userid) {
+      const res = await Blog.findByIdAndUpdate(request.params.id, request.body, {
+        new: true,
+      });
+      if (res) {
+        return response.status(200).end();
+      }
+    } else {
+      return response.status(403).json({ error: "unauthorized access" });
+    }
   }
   response.status(404).end();
 });

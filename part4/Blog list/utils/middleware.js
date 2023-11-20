@@ -1,4 +1,4 @@
-const SECRET = require("../utils/config");
+const {SECRET} = require("../utils/config");
 const logger = require("./logger");
 const jwt = require("jsonwebtoken");
 
@@ -17,7 +17,6 @@ const unknownEndpoint = (request, response) => {
 };
 
 const errorHandler = (error, request, response, next) => {
-  console.log(error.name);
   if (error) {
     if (error.name === "CastError") {
       return response.status(400).send({ error: "malformatted id" });
@@ -49,9 +48,9 @@ const userExtractor = (req, res, next) => {
   const decodedToken = jwt.verify(token, SECRET);
   if (decodedToken) {
     req.userid = decodedToken.id;
-    next();
+    return next();
   }
-  res.status(401).json({ error: "invalid token" });
+  return res.status(401).json({ error: "invalid token" });
 };
 
 module.exports = {

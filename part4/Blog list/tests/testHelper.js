@@ -1,4 +1,7 @@
 const Blog = require("../models/blogModel");
+const User = require("../models/userModel");
+const jwt = require("jsonwebtoken")
+const { SECRET } = require("../utils/config")
 
 const initialBlogs = [
   {
@@ -81,8 +84,43 @@ const blogsInDb = async () => {
   return blogs.map((blog) => blog.toJSON());
 };
 
+const InsertTestBlogs = async () => {
+  const id = await getTestUserId();
+  const initialBlogsArr = initialBlogs.map(e => ({ ...e, user: id }))
+  await Blog.insertMany(initialBlogsArr);
+  return id
+}
+
+async function getTestUserId() {
+  const testuser = await User.findOne({ username: "testuser" })
+  if (!testuser) {
+    const user = new User({
+      username: "testuser",
+      name: "test",
+      password: "qwerty"
+    })
+    const result = await user.save();
+    return result.id
+  }
+  return testuser.id
+}
+
+async function getJwtTokken(id) {
+  const userobj = await User.findById(id)
+  if(userobj){
+    const tokenPayload = {
+      username: userobj.username,
+      id: userobj.id,
+    };
+    return jwt.sign(tokenPayload, SECRET, { expiresIn: 60 * 60 });
+  }
+}
+
 module.exports = {
   initialBlogs,
   nonExistingId,
   blogsInDb,
+  InsertTestBlogs,
+  getJwtTokken
 };
+
