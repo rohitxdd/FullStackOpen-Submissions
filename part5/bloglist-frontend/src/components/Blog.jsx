@@ -14,10 +14,10 @@ const Blog = ({ data, IncrementLike, username, RemoveBlog }) => {
     <div style={blogStyle}>
       <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
         <h3>
-          <strong>{data.title} </strong>
+          <strong data-testid="blog-title">{data.title} </strong>
         </h3>
         <div>
-          <button onClick={() => setShowDetail(!showDetail)}>
+          <button data-testid="toggleButton" onClick={() => setShowDetail(!showDetail)}>
             {showDetail ? "Hide" : "View"}
           </button>
         </div>
@@ -25,14 +25,14 @@ const Blog = ({ data, IncrementLike, username, RemoveBlog }) => {
 
       {showDetail && (
         <div style={{ display: "block" }}>
-          <p>{data.url}</p>
-          <p>
+          <p data-testid="blog-url">{data.url}</p>
+          <p data-testid="blog-likes">
             Likes {data.likes}{" "}
             <button onClick={() => IncrementLike(data.id)}>Like</button>
           </p>
-          <p>{data.author}</p>
+          <p data-testid="blog-author">{data.author}</p>
 
-          {data.user.username === username && (
+          {data.user?.username === username && (
             <button
               onClick={() => {
                 if (confirm(`Remove blog ${data.title} by ${data.author}`)) {
