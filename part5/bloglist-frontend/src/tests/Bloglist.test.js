@@ -12,7 +12,6 @@ test('render content', () => {
     }
 
     render(<Blog data={blogdata} />)
-    screen.debug()
 
     const title = screen.getByTestId('blog-title')
     const url = screen.queryByTestId('blog-url')
@@ -42,9 +41,31 @@ test('show url and likes on button click', async () => {
     await user.click(button)
     const url = screen.queryByTestId('blog-url')
     const like = screen.queryByTestId('blog-likes')
-    screen.debug()
 
     expect(url).toBeDefined()
     expect(like).toBeDefined()
+})
 
-})	
+test('Like button is clicked twice', async()=>{
+    const blogdata = {
+        id: "random uuid",
+        title: "Blog Title",
+        url: "fake url",
+        author: "fake author",
+    }
+    const mockLikefn = jest.fn()
+    const mockRemovefn = jest.fn()
+
+    render(<Blog data={blogdata} IncrementLike={mockLikefn} RemoveBlog={mockRemovefn} username={null} />)
+    const user = userEvent.setup()
+    const button = screen.getByTestId('toggleButton')
+    await user.click(button)
+
+    const likeBtn = screen.getByTestId('button-like')
+
+    await user.click(likeBtn)
+    await user.click(likeBtn)
+
+    expect(mockLikefn.mock.calls).toHaveLength(2)
+
+})

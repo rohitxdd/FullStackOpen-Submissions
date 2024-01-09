@@ -28,7 +28,7 @@ const Blog = ({ data, IncrementLike, username, RemoveBlog }) => {
           <p data-testid="blog-url">{data.url}</p>
           <p data-testid="blog-likes">
             Likes {data.likes}{" "}
-            <button onClick={() => IncrementLike(data.id)}>Like</button>
+            <button data-testid="button-like" onClick={() => IncrementLike(data.id)}>Like</button>
           </p>
           <p data-testid="blog-author">{data.author}</p>
 
