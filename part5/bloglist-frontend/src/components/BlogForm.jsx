@@ -31,22 +31,22 @@ export default function BlogForm({ createBlog, setFormVisibility }) {
                 <span>
                     <strong>Title: </strong>
                 </span>
-                <input type="text" ref={titleRef} name="title"></input>
+                <input data-testid="input-title" type="text" ref={titleRef} name="title"></input>
             </div>
             <div style={formStyle}>
                 <span>
                     <strong>Authur: </strong>
                 </span>
-                <input type="text" ref={authorRef} name="authur"></input>
+                <input data-testid="input-author" type="text" ref={authorRef} name="authur"></input>
             </div>
             <div style={formStyle}>
                 <span>
                     <strong>Url: </strong>
                 </span>
-                <input type="text" ref={urlRef} name="url"></input>
+                <input data-testid="input-url" type="text" ref={urlRef} name="url"></input>
             </div>
             <div style={formStyle}>
-                <button onClick={handleSubmit}>Create</button>
+                <button data-testid="button-submit" onClick={handleSubmit}>Create</button>
                 <button onClick={() => setFormVisibility(false)}>Cancel</button>
             </div>
         </div>
