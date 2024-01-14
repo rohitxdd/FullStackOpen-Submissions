@@ -49,7 +49,31 @@ describe('Blog app', function () {
       cy.get('[data-testid="button-submit"]').click()
       cy.contains('A new Blog cypress title added')
       cy.get('[data-testid="blog-title"]').contains('cypress title')
+
+      it('User can like a blog', function () {
+        cy.get('[data-testid="toggleButton"]').click()
+      })
+
     })
+
+    describe('After Blog Created', function () {
+      beforeEach(function () {
+        cy.contains('New Blog').click()
+        cy.get('[data-testid="input-title"]').type("cypress title")
+        cy.get('[data-testid="input-author"]').type("cypress author")
+        cy.get('[data-testid="input-url"]').type("cypress.com")
+        cy.get('[data-testid="button-submit"]').click()
+      })
+
+      it('User can like a blog', function () {
+        cy.get('[data-testid="toggleButton"]').click()
+        cy.get('[data-testid="button-like"]').click()
+        cy.get('[data-testid="blog-likes"]').contains('Likes 1')
+      })
+      
+    })
+
+
   })
 
 })
