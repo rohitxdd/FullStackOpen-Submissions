@@ -70,10 +70,17 @@ describe('Blog app', function () {
         cy.get('[data-testid="button-like"]').click()
         cy.get('[data-testid="blog-likes"]').contains('Likes 1')
       })
-      
+
+      it("User can delete blog", function () {
+        cy.get('[data-testid="toggleButton"]').click()
+        cy.window().then((win) => {
+          cy.stub(win, 'confirm').returns(true);
+        });
+        cy.contains('Remove').click()
+        cy.contains('No Blogs to Show')
+      })
     })
-
-
+    
   })
 
 })
