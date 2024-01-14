@@ -105,8 +105,24 @@ describe('Blog app', function () {
         cy.get('[data-testid="blog-remove"]').should('not.exist');
       })
 
+      it('blogs are ordered according to likes', function () {
+        cy.contains('New Blog').click()
+        cy.get('[data-testid="input-title"]').type("Second Blog")
+        cy.get('[data-testid="input-author"]').type("cypress author")
+        cy.get('[data-testid="input-url"]').type("cypress.com")
+        cy.get('[data-testid="button-submit"]').click()
+
+        cy.get('.blogs').eq(0).get('[data-testid="toggleButton"]').eq(0).click()
+        cy.get('[data-testid="button-like"]').click()
+        cy.contains('Hide').click()
+        cy.get('[data-testid="toggleButton"]').eq(1).click()
+        cy.get('[data-testid="button-like"]').click()
+        cy.get('[data-testid="button-like"]').click()
+        cy.get('.blogs').eq(0).should('contain', 'Second Blog')
+      })
+
     })
-    
+
   })
 
 })
