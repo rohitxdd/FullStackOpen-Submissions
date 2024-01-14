@@ -80,6 +80,32 @@ describe('Blog app', function () {
         cy.contains('No Blogs to Show')
       })
     })
+
+    describe('For other user', function () {
+      beforeEach(function () {
+        cy.contains('New Blog').click()
+        cy.get('[data-testid="input-title"]').type("cypress title")
+        cy.get('[data-testid="input-author"]').type("cypress author")
+        cy.get('[data-testid="input-url"]').type("cypress.com")
+        cy.get('[data-testid="button-submit"]').click()
+        cy.contains('Logout').click()
+        const reqBody = {
+          username: "notrohitxd",
+          name: "rohit",
+          password: "qwerty"
+        }
+        cy.request('POST', 'http://localhost:3000/api/users', reqBody)
+        cy.get('input:first').type('notrohitxd')
+        cy.get('input:last').type('qwerty')
+        cy.contains('Login').click()
+      })
+
+      it('only the creator can see the delete button', function () {
+        cy.get('[data-testid="toggleButton"]').click()
+        cy.get('[data-testid="blog-remove"]').should('not.exist');
+      })
+
+    })
     
   })
 

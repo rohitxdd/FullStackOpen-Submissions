@@ -33,7 +33,7 @@ const Blog = ({ data, IncrementLike, username, RemoveBlog }) => {
           <p data-testid="blog-author">{data.author}</p>
 
           {data.user?.username === username && (
-            <button
+            <button data-testid="blog-remove"
               onClick={() => {
                 if (confirm(`Remove blog ${data.title} by ${data.author}`)) {
                   RemoveBlog(data.id);
