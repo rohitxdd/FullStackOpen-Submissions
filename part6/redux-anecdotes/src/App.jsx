@@ -16,19 +16,19 @@ const App = () => {
   const addNote = (event) => {
     event.preventDefault();
     const anecdote = event.target.anecdote.value
-    if(anecdote.length > 3){
+    if (anecdote.length > 3) {
       dispatch({ type: "ADD", payload: { anecdote } })
-    }else{
+    } else {
       //notify
       return;
     }
     event.target.anecdote.value = ""
   }
-
+  const sortedAnecdote = [...anecdotes].sort((a, b) => b.votes - a.votes)
   return (
     <div>
       <h2>Anecdotes</h2>
-      {anecdotes.map(anecdote =>
+      {sortedAnecdote.map(anecdote =>
         <div key={anecdote.id}>
           <div>
             {anecdote.content}
