@@ -1,4 +1,5 @@
 import { useSelector, useDispatch } from 'react-redux'
+import { incrementVote, addAnecdote } from './reducers/anecdoteReducer'
 
 const App = () => {
   const anecdotes = useSelector(state => state)
@@ -8,16 +9,11 @@ const App = () => {
     dispatch(incrementVote(id))
   }
 
-  const incrementVote = (id) => ({
-    type: "INCREMENT",
-    payload: id
-  })
-
   const addNote = (event) => {
     event.preventDefault();
     const anecdote = event.target.anecdote.value
     if (anecdote.length > 3) {
-      dispatch({ type: "ADD", payload: { anecdote } })
+      dispatch(addAnecdote(anecdote))
     } else {
       //notify
       return;
