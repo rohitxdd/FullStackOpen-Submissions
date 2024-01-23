@@ -9,12 +9,11 @@ export default function AnecdoteForm() {
         if (anecdote.length > 3) {
             dispatch(addAnecdote(anecdote))
         } else {
-            //notify
             return;
         }
         event.target.anecdote.value = ""
     }
-    
+
     return (
         <>
             <h2>create new</h2>
