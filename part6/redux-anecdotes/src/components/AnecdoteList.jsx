@@ -1,7 +1,6 @@
 import { useSelector, useDispatch } from "react-redux"
-import { incrementVote, appendAnecdote } from "../reducers/anecdoteReducer"
+import { incrementVote, initialAnecdotes } from "../reducers/anecdoteReducer"
 import { notify, removeNotification } from "../reducers/notificationReducer"
-import services from "../services/anecdotes"
 import { useEffect } from "react"
 
 export default function AnecdoteList() {
@@ -24,13 +23,9 @@ export default function AnecdoteList() {
 
     const sortedAnecdote = [...anecdotes].sort((a, b) => b.votes - a.votes)
 
-    async function fetchAnecdotes() {
-        const res = await services.getAll()
-        dispatch(appendAnecdote(res))
-    }
-    
+
     useEffect(() => {
-        fetchAnecdotes()
+        dispatch(initialAnecdotes())
     }, [])
 
     return (
