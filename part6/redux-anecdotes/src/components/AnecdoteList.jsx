@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux"
-import { incrementVote, initialAnecdotes } from "../reducers/anecdoteReducer"
+import { initialAnecdotes, incrementVoteAnecdote } from "../reducers/anecdoteReducer"
 import { notify, removeNotification } from "../reducers/notificationReducer"
 import { useEffect } from "react"
 
@@ -18,7 +18,8 @@ export default function AnecdoteList() {
         setTimeout(() => {
             dispatch(removeNotification())
         }, 5000)
-        dispatch(incrementVote(anecdote.id))
+        // dispatch(incrementVote(anecdote.id))
+        dispatch(incrementVoteAnecdote({id : anecdote.id , vote : anecdote.votes}))
     }
 
     const sortedAnecdote = [...anecdotes].sort((a, b) => b.votes - a.votes)
