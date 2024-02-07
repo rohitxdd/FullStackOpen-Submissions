@@ -23,5 +23,4 @@ export const setNotification = (notification, time = 1000) => {
         }, time)
     }
 }
-
 export default notificationSlice.reducer
