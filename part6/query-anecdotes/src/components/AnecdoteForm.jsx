@@ -1,12 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { createNew } from "../services/requests"
+import { useNotificationDispatch } from "../context/notificationContext"
 
 
 const AnecdoteForm = () => {
   const queryClient = useQueryClient()
+  const dispatchNotification = useNotificationDispatch()
   const newAnecdoteMutation = useMutation({
-    mutationFn: createNew, onSuccess: () => {
+    mutationFn: createNew, onSuccess: (e) => {
       queryClient.invalidateQueries({ queryKey: ['anecdote'] })
+      dispatchNotification(`You added ${e.content}`)
     }
   })
 
