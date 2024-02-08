@@ -9,7 +9,7 @@ This is my submission for the Fullstack Open course, a comprehensive online cour
  - [x] Part 3 - Programming a server with NodeJS and Express
  - [x] Part 4 - Testing Express servers, user administration
  - [x] Part 5 - Testing React apps
- - [ ] Part 6 - Advanced state management
+ - [x] Part 6 - Advanced state management
  - [ ] Part 7 - React router, custom hooks, styling app wiPh CSS and webpack
  - [ ] Part 8 - GraphQL
  - [ ] Part 9 - TypeScript
