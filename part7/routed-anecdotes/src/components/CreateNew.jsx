@@ -19,10 +19,11 @@ const CreateNew = (props) => {
         navigate("/")
     }
 
-    const resetForm = (e) => {
-        content.reset()
-        author.reset()
-        info.reset()
+    const resetForm = (event) => {
+        event.target.value = ''
+        content.onChange(event)
+        author.onChange(event)
+        info.onChange(event)
     }
 
     return (
