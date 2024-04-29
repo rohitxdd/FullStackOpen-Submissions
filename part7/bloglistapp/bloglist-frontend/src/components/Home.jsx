@@ -11,7 +11,7 @@ import {
 } from "../services/blogs";
 import { setNotification } from "../reducers/notificationReducer";
 import { useDispatch, useSelector } from "react-redux";
-import { setBlogs } from "../reducers/blogReducer";
+import { removeBlog, setBlogs } from "../reducers/blogReducer";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ export default function Home() {
           }
         });
         newBlogArr.sort((a, b) => b.likes - a.likes);
-        setBlogs(newBlogArr);
+        dispatch(setBlogs(newBlogArr))
       }
     } catch (e) {
       console.log(e.message);
@@ -51,7 +51,7 @@ export default function Home() {
   const RemoveBlog = async (id) => {
     const res = await RemoveBlogByID(id);
     if (res.status == 204) {
-      setBlogs((prev) => prev.filter((e) => e.id !== id));
+      dispatch(removeBlog({ id }))
       dispatch(setNotification({ text: "Blog deleted", status: "success" }));
     }
   };
