@@ -10,13 +10,15 @@ import {
   RemoveBlogByID,
 } from "../services/blogs";
 import { setNotification } from "../reducers/notificationReducer";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setBlogs } from "../reducers/blogReducer";
 
 export default function Home() {
   const navigate = useNavigate();
-  const dispatch = useDispatch()
-
-  const [blogs, setBlogs] = useState([]);
+  const dispatch = useDispatch();
+  const blogs = useSelector(state => {
+    return state.blogs
+  });
   const [formVisible, setFormVisibility] = useState(false);
 
   async function IncrementLike(id) {
@@ -42,7 +44,7 @@ export default function Home() {
     const res = await getAllBlog();
     if (res && res.length > 0) {
       res.sort((a, b) => b.likes - a.likes);
-      setBlogs(res);
+      dispatch(setBlogs(res))
     }
   }
 
@@ -80,7 +82,7 @@ export default function Home() {
       <h1>Blogs</h1>
       <UserSection />
       {formVisible ? (
-        <CreateBlog setFormVisibility={setFormVisibility} setBlogs={setBlogs} />
+        <CreateBlog setFormVisibility={setFormVisibility} />
       ) : (
         <button onClick={() => setFormVisibility(true)}>New Blog</button>
       )}
