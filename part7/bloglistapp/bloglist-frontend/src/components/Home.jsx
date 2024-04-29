@@ -9,11 +9,12 @@ import {
   IncrementLikeOfBlog,
   RemoveBlogByID,
 } from "../services/blogs";
-import { useMessage } from "../services/MessageContext";
+import { setNotification } from "../reducers/notificationReducer";
+import { useDispatch } from "react-redux";
 
 export default function Home() {
   const navigate = useNavigate();
-  const { showMessage } = useMessage();
+  const dispatch = useDispatch()
 
   const [blogs, setBlogs] = useState([]);
   const [formVisible, setFormVisibility] = useState(false);
@@ -49,7 +50,7 @@ export default function Home() {
     const res = await RemoveBlogByID(id);
     if (res.status == 204) {
       setBlogs((prev) => prev.filter((e) => e.id !== id));
-      showMessage({ text: "Blog deleted", status: "success" });
+      dispatch(setNotification({ text: "Blog deleted", status: "success" }));
     }
   };
 

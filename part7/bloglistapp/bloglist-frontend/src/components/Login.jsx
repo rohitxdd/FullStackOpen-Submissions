@@ -1,15 +1,16 @@
 import { useState } from "react";
 import loginService from "../services/loginService";
-import { useMessage } from "../services/MessageContext";
 import { useNavigate } from "react-router-dom";
+import { setNotification } from "../reducers/notificationReducer";
+import { useDispatch } from "react-redux";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
+  const dispatch = useDispatch()
 
-  const { showMessage } = useMessage();
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -26,11 +27,11 @@ export default function Login() {
         const result = await loginService.login({ username, password });
         localStorage.setItem("username", result.username);
         localStorage.setItem("token", result.token);
-        showMessage({ text: "Login Successful", status: "success" });
+        dispatch(setNotification({ text: "Login Successful", status: "success" }));
         navigate("/home");
       } catch (e) {
         console.error(e.response.data.error);
-        showMessage({ text: e.response.data.error, status: "error" });
+        dispatch(setNotification({ text: e.response.data.error, status: "error" }));
       }
     }
   }

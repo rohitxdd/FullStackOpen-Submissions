@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import Login from "./components/Login";
 import { Routes, Route } from "react-router-dom";
-import { MessageProvider } from "./services/MessageContext";
+import { Notification } from "./services/Notification";
 import Home from "./components/Home";
 import { useNavigate } from "react-router-dom";
 
@@ -16,12 +16,12 @@ const App = () => {
   }, [hasToken]);
 
   return (
-    <MessageProvider>
+    <Notification>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<Home />} />
       </Routes>
-    </MessageProvider>
+    </Notification>
   );
 };
 
