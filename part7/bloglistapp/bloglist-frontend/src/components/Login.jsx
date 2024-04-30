@@ -3,6 +3,7 @@ import loginService from "../services/loginService";
 import { useNavigate } from "react-router-dom";
 import { setNotification } from "../reducers/notificationReducer";
 import { useDispatch } from "react-redux";
+import { setUser } from "../reducers/userReducer";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -25,7 +26,8 @@ export default function Login() {
     if (username.trim() && password.trim()) {
       try {
         const result = await loginService.login({ username, password });
-        localStorage.setItem("username", result.username);
+        // localStorage.setItem("username", result.username);
+        dispatch(setUser({ username: result.username }))
         localStorage.setItem("token", result.token);
         dispatch(setNotification({ text: "Login Successful", status: "success" }));
         navigate("/home");
