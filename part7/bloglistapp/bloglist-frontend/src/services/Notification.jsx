@@ -1,11 +1,8 @@
 import PopupMessage from "../components/PopupMessage";
-import { useSelector } from "react-redux";
-
+import { useNotification } from "../context/NotificationContext.jsx";
 
 export const Notification = ({ children }) => {
-  const notification = useSelector(state => {
-    return state.notification
-  })
+  const { state: notification } = useNotification()
   return (
     <>
       {notification && <PopupMessage message={notification} />}

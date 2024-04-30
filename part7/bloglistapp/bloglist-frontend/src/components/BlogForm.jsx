@@ -1,6 +1,5 @@
 import { useRef } from "react";
-import { setNotification } from "../reducers/notificationReducer";
-import { useDispatch } from "react-redux";
+import { useNotification } from "../context/NotificationContext"
 
 const formStyle = {
   margin: "5px",
@@ -10,7 +9,7 @@ export default function BlogForm({ createBlog, setFormVisibility }) {
   const titleRef = useRef(null);
   const authorRef = useRef(null);
   const urlRef = useRef(null);
-  const dispatch = useDispatch()
+  const { setNotification } = useNotification()
 
   function handleSubmit() {
     if (
@@ -25,7 +24,7 @@ export default function BlogForm({ createBlog, setFormVisibility }) {
       };
       createBlog(inputs);
     } else {
-      dispatch(setNotification({ text: "All Fields are required", status: "error" }));
+      setNotification({ text: "All Fields are required", status: "error" });
     }
   }
 

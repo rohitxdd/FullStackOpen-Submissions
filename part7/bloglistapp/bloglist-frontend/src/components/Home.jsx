@@ -9,13 +9,14 @@ import {
   IncrementLikeOfBlog,
   RemoveBlogByID,
 } from "../services/blogs";
-import { setNotification } from "../reducers/notificationReducer";
+import { useNotification } from "../context/NotificationContext"
 import { useDispatch, useSelector } from "react-redux";
 import { removeBlog, setBlogs } from "../reducers/blogReducer";
 
 export default function Home() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { setNotification } = useNotification();
   const blogs = useSelector(state => {
     return state.blogs
   });
@@ -52,7 +53,7 @@ export default function Home() {
     const res = await RemoveBlogByID(id);
     if (res.status == 204) {
       dispatch(removeBlog({ id }))
-      dispatch(setNotification({ text: "Blog deleted", status: "success" }));
+      setNotification({ text: "Blog deleted", status: "success" });
     }
   };
 

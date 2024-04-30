@@ -1,14 +1,14 @@
 import { useState } from "react";
 import loginService from "../services/loginService";
 import { useNavigate } from "react-router-dom";
-import { setNotification } from "../reducers/notificationReducer";
 import { useDispatch } from "react-redux";
 import { setUser } from "../reducers/userReducer";
+import { useNotification } from "../context/NotificationContext";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
+  const { setNotification } = useNotification()
   const navigate = useNavigate();
   const dispatch = useDispatch()
 
@@ -29,11 +29,11 @@ export default function Login() {
         // localStorage.setItem("username", result.username);
         dispatch(setUser({ username: result.username }))
         localStorage.setItem("token", result.token);
-        dispatch(setNotification({ text: "Login Successful", status: "success" }));
+        setNotification({ text: "Login Successful", status: "success" });
         navigate("/home");
       } catch (e) {
         console.error(e.response.data.error);
-        dispatch(setNotification({ text: e.response.data.error, status: "error" }));
+        setNotification({ text: e.response.data.error, status: "error" });
       }
     }
   }
