@@ -1,16 +1,16 @@
-import { useDispatch } from "react-redux";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { reset } from "../reducers/userReducer";
 
 export default function UserSection() {
   const username = localStorage.getItem("username");
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const queryClient = useQueryClient()
 
   function logoutUser() {
     localStorage.clear();
-    dispatch(reset())
     navigate("/");
+    queryClient.removeQueries()
+    queryClient.invalidateQueries();
   }
   return (
     <div>

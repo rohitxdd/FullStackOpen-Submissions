@@ -1,16 +1,15 @@
 import { useState } from "react";
 import loginService from "../services/loginService";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setUser } from "../reducers/userReducer";
 import { useNotification } from "../context/NotificationContext";
+import { useUser } from "../context/UserContext";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { setNotification } = useNotification()
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const { setUser } = useUser()
 
 
   function handleChange(e) {
@@ -26,8 +25,7 @@ export default function Login() {
     if (username.trim() && password.trim()) {
       try {
         const result = await loginService.login({ username, password });
-        // localStorage.setItem("username", result.username);
-        dispatch(setUser({ username: result.username }))
+        setUser(result.username)
         localStorage.setItem("token", result.token);
         setNotification({ text: "Login Successful", status: "success" });
         navigate("/home");

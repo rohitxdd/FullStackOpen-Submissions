@@ -24,6 +24,10 @@ export default function Home() {
     }
   }
 
+  if (isError) {
+    navigate("/")
+  }
+
   useEffect(() => {
     const checkToken = () => {
       const token = localStorage.getItem("token");
@@ -46,10 +50,6 @@ export default function Home() {
 
   if (isLoading) {
     return <h2>Loading...</h2>
-  }
-
-  if (isError) {
-    return <h2>Oops! Something went wrong</h2>
   }
 
   return (

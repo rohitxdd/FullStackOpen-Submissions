@@ -5,6 +5,7 @@ import { Notification } from "./services/Notification";
 import Home from "./components/Home";
 import { useNavigate } from "react-router-dom";
 import { NotificationProvider } from "./context/NotificationContext";
+import { UserProvider } from "./context/UserContext";
 
 const App = () => {
   const navigate = useNavigate();
@@ -17,14 +18,16 @@ const App = () => {
   }, [hasToken]);
 
   return (
-    <NotificationProvider>
-      <Notification>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/home" element={<Home />} />
-        </Routes>
-      </Notification>
-    </NotificationProvider>
+    <UserProvider>
+      <NotificationProvider>
+        <Notification>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/home" element={<Home />} />
+          </Routes>
+        </Notification>
+      </NotificationProvider>
+    </UserProvider>
   );
 };
 
