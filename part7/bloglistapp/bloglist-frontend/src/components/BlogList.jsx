@@ -1,6 +1,6 @@
 import Blog from "./Blog";
 
-export default function BlogList({ blogs, IncrementLike, RemoveBlog }) {
+export default function BlogList({ blogs }) {
   const username = localStorage.getItem("username");
   return (
     <>
@@ -10,9 +10,7 @@ export default function BlogList({ blogs, IncrementLike, RemoveBlog }) {
             <Blog
               key={blog.id}
               data={blog}
-              IncrementLike={IncrementLike}
               username={username}
-              RemoveBlog={RemoveBlog}
             />
           ))}
         </div>

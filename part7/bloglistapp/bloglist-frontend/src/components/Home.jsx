@@ -4,41 +4,17 @@ import BlogList from "./BlogList";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import CreateBlog from "./CreateBlog";
-import {
-  getAllBlog,
-  IncrementLikeOfBlog,
-  RemoveBlogByID,
-} from "../services/blogs";
-import { useNotification } from "../context/NotificationContext"
+import { getAllBlog } from "../services/blogs";
 import { useQuery } from "@tanstack/react-query"
 
 export default function Home() {
   const navigate = useNavigate();
-  const { setNotification } = useNotification();
   const [formVisible, setFormVisibility] = useState(false);
 
   const { data: blogs, isError, isLoading } = useQuery({
     queryKey: ['blog'],
     queryFn: getBlogs,
   })
-
-  async function IncrementLike(id) {
-    try {
-      const response = await IncrementLikeOfBlog(id);
-      if (response) {
-        const newBlogArr = blogs.map((e) => {
-          if (e.id === response.id) {
-            return response;
-          } else {
-            return e;
-          }
-        });
-        newBlogArr.sort((a, b) => b.likes - a.likes);
-      }
-    } catch (e) {
-      console.log(e.message);
-    }
-  }
 
   async function getBlogs() {
     const res = await getAllBlog();
@@ -47,13 +23,6 @@ export default function Home() {
       return res
     }
   }
-
-  const RemoveBlog = async (id) => {
-    const res = await RemoveBlogByID(id);
-    if (res.status == 204) {
-      setNotification({ text: "Blog deleted", status: "success" });
-    }
-  };
 
   useEffect(() => {
     const checkToken = () => {
@@ -83,7 +52,6 @@ export default function Home() {
     return <h2>Oops! Something went wrong</h2>
   }
 
-
   return (
     <div>
       <h1>Blogs</h1>
@@ -95,8 +63,6 @@ export default function Home() {
       )}
       <BlogList
         blogs={blogs ?? []}
-        IncrementLike={IncrementLike}
-        RemoveBlog={RemoveBlog}
       />
     </div>
   );

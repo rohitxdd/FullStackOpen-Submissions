@@ -1,5 +1,8 @@
 import { useState } from "react";
 import propTypes from "prop-types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { IncrementLikeOfBlog, RemoveBlogByID } from "../services/blogs";
+import { useNotification } from "../context/NotificationContext";
 
 const blogStyle = {
   border: "1px solid black",
@@ -8,8 +11,26 @@ const blogStyle = {
   margin: "10px",
 };
 
-const Blog = ({ data, IncrementLike, username, RemoveBlog }) => {
+const Blog = ({ data, username }) => {
   const [showDetail, setShowDetail] = useState();
+  const { setNotification } = useNotification()
+  const queryClient = useQueryClient();
+
+  const likeMutation = useMutation({
+    mutationFn: IncrementLikeOfBlog,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blog'] })
+    }
+  })
+
+  const removeMutation = useMutation({
+    mutationFn: RemoveBlogByID,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blog'] })
+      setNotification({ text: "Blog deleted", status: "success" });
+    }
+  })
+
   return (
     <div style={blogStyle}>
       <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
@@ -33,7 +54,7 @@ const Blog = ({ data, IncrementLike, username, RemoveBlog }) => {
             Likes {data.likes}{" "}
             <button
               data-testid="button-like"
-              onClick={() => IncrementLike(data.id)}
+              onClick={() => likeMutation.mutate(data.id)}
             >
               Like
             </button>
@@ -45,7 +66,7 @@ const Blog = ({ data, IncrementLike, username, RemoveBlog }) => {
               data-testid="blog-remove"
               onClick={() => {
                 if (confirm(`Remove blog ${data.title} by ${data.author}`)) {
-                  RemoveBlog(data.id);
+                  removeMutation.mutate(data.id)
                 }
               }}
             >
@@ -60,9 +81,7 @@ const Blog = ({ data, IncrementLike, username, RemoveBlog }) => {
 
 Blog.propTypes = {
   data: propTypes.object.isRequired,
-  IncrementLike: propTypes.func.isRequired,
   username: propTypes.string.isRequired,
-  RemoveBlog: propTypes.func.isRequired,
 };
 
 export default Blog;
