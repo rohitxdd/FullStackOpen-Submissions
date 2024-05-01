@@ -10,17 +10,17 @@ import {
   RemoveBlogByID,
 } from "../services/blogs";
 import { useNotification } from "../context/NotificationContext"
-import { useDispatch, useSelector } from "react-redux";
-import { removeBlog, setBlogs } from "../reducers/blogReducer";
+import { useQuery } from "@tanstack/react-query"
 
 export default function Home() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { setNotification } = useNotification();
-  const blogs = useSelector(state => {
-    return state.blogs
-  });
   const [formVisible, setFormVisibility] = useState(false);
+
+  const { data: blogs, isError, isLoading } = useQuery({
+    queryKey: ['blog'],
+    queryFn: getBlogs,
+  })
 
   async function IncrementLike(id) {
     try {
@@ -34,7 +34,6 @@ export default function Home() {
           }
         });
         newBlogArr.sort((a, b) => b.likes - a.likes);
-        dispatch(setBlogs(newBlogArr))
       }
     } catch (e) {
       console.log(e.message);
@@ -45,14 +44,13 @@ export default function Home() {
     const res = await getAllBlog();
     if (res && res.length > 0) {
       res.sort((a, b) => b.likes - a.likes);
-      dispatch(setBlogs(res))
+      return res
     }
   }
 
   const RemoveBlog = async (id) => {
     const res = await RemoveBlogByID(id);
     if (res.status == 204) {
-      dispatch(removeBlog({ id }))
       setNotification({ text: "Blog deleted", status: "success" });
     }
   };
@@ -75,8 +73,16 @@ export default function Home() {
       }
     };
     checkToken();
-    getBlogs();
   }, []);
+
+  if (isLoading) {
+    return <h2>Loading...</h2>
+  }
+
+  if (isError) {
+    return <h2>Oops! Something went wrong</h2>
+  }
+
 
   return (
     <div>
@@ -88,7 +94,7 @@ export default function Home() {
         <button onClick={() => setFormVisibility(true)}>New Blog</button>
       )}
       <BlogList
-        blogs={blogs}
+        blogs={blogs ?? []}
         IncrementLike={IncrementLike}
         RemoveBlog={RemoveBlog}
       />

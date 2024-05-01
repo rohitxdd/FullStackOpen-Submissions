@@ -1,26 +1,32 @@
 import { CreateNewBlog } from "../services/blogs";
 import BlogForm from "./BlogForm";
 import { useNotification } from "../context/NotificationContext"
-import { useDispatch } from "react-redux";
-import { addBlog } from "../reducers/blogReducer"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 export default function CreateBlog({ setFormVisibility }) {
-  const dispatch = useDispatch()
+  const queryClient = useQueryClient()
+
+  const mutation = useMutation({
+    mutationFn: CreateNewBlog,
+    onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ['blog'] })
+      setNotification({
+        text: `A new Blog ${res.title} added`,
+        status: "success",
+      });
+      setFormVisibility(false);
+    },
+    onError: () => {
+      setNotification({ text: "something went wrong", status: "error" });
+    }
+  })
 
   const { setNotification } = useNotification()
 
   async function createBlog(inputs) {
-    const response = await CreateNewBlog(inputs);
-    if (response?.title) {
-      dispatch(addBlog(response))
-      setNotification({
-        text: `A new Blog ${response.title} added`,
-        status: "success",
-      });
-      setFormVisibility(false);
-    } else {
-      setNotification({ text: "something went wrong", status: "error" });
-    }
+    mutation.mutate({
+      ...inputs
+    })
   }
 
   return (
