@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react";
-import UserSection from "./UserSection";
+import { useState } from "react";
 import BlogList from "./BlogList";
-import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import CreateBlog from "./CreateBlog";
 import { getAllBlog } from "../services/blogs";
@@ -28,34 +26,12 @@ export default function Home() {
     navigate("/")
   }
 
-  useEffect(() => {
-    const checkToken = () => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        try {
-          const decode = jwtDecode(token);
-          const expDate = new Date(decode.exp * 1000);
-          if (expDate < new Date()) {
-            navigate("/");
-          }
-        } catch {
-          navigate("/");
-        }
-      } else {
-        navigate("/");
-      }
-    };
-    checkToken();
-  }, []);
-
   if (isLoading) {
     return <h2>Loading...</h2>
   }
 
   return (
     <div>
-      <h1>Blogs</h1>
-      <UserSection />
       {formVisible ? (
         <CreateBlog setFormVisibility={setFormVisibility} />
       ) : (

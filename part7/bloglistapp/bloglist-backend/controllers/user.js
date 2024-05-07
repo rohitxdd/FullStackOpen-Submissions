@@ -23,8 +23,16 @@ userRouter.post("/", async (request, response) => {
 });
 
 userRouter.get("/", async (request, response) => {
-  const res = await User.find({}).populate("blogs").exec();
-  response.json(res);
+  const result = await User.find({})
+  if (result) {
+    const transformedResult = result.map(elem => {
+      const obj = elem.toJSON()
+      return ({ ...obj, blogs: obj.blogs.length })
+    })
+    return response.status(200).json(transformedResult)
+  } else {
+    return response.json([])
+  }
 });
 
 module.exports = userRouter;

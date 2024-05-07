@@ -1,8 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 
 export default function UserSection() {
-  const username = localStorage.getItem("username");
+  const { state: { username } } = useUser()
   const navigate = useNavigate();
   const queryClient = useQueryClient()
 

@@ -1,7 +1,7 @@
 import { createContext, useContext, useReducer } from "react";
 
 const initialState = {
-    username: ""
+    username: localStorage.getItem("username")
 }
 
 const UserContext = createContext({ ...initialState, username: localStorage.getItem("username") });
