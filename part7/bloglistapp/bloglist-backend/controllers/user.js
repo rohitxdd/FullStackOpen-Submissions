@@ -1,6 +1,7 @@
 const userRouter = require("express").Router();
 var bcrypt = require("bcryptjs");
 const User = require("../models/userModel");
+const { response } = require("express");
 
 userRouter.post("/", async (request, response) => {
   const { username, password, name } = request.body;
@@ -34,5 +35,17 @@ userRouter.get("/", async (request, response) => {
     return response.json([])
   }
 });
+
+userRouter.get("/:id", async (request, response) => {
+  const { id } = request.params
+  if (id) {
+    const res = await User.findById(id).populate({
+      path: "blogs",
+      select: "id title"
+    })
+    return response.status(200).json(res);
+  }
+  return response.status(400).end();
+})
 
 module.exports = userRouter;

@@ -1,7 +1,9 @@
+import { useNavigate } from "react-router-dom"
 import { getAllUsers } from "../services/userService"
 import { useQuery } from '@tanstack/react-query'
 
 export default function Users() {
+    const navigate = useNavigate()
 
     const query = useQuery({
         queryKey: ['users'],
@@ -28,7 +30,7 @@ export default function Users() {
                 <tbody>
                     {query.data.map(e => {
                         return <tr key={e.id}>
-                            <td>{e.name}</td>
+                            <td onClick={() => navigate(`./${e.id}`)} style={{ cursor: "pointer" }}>{e.name.toUpperCase()}</td>
                             <td>{e.blogs}</td>
                         </tr>
                     })}

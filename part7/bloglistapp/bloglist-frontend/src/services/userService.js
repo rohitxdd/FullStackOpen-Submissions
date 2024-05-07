@@ -7,3 +7,10 @@ export const getAllUsers = () => {
     const request = axios.get(baseUrl, { headers });
     return request.then((response) => response.data);
 };
+
+export const getUserAllBlogs = id => {
+    const token = localStorage.getItem("token");
+    const headers = { Authorization: `Bearer ${token}` };
+    const request = axios.get(`${baseUrl}/${id}`, { headers });
+    return request.then((response) => response.data);
+};

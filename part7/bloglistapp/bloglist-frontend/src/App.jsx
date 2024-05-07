@@ -6,6 +6,7 @@ import { NotificationProvider } from "./context/NotificationContext";
 import { UserProvider } from "./context/UserContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Users from "./pages/Users";
+import User from "./components/User";
 
 const App = () => {
   return (
@@ -14,8 +15,9 @@ const App = () => {
         <Notification>
           <Routes>
             <Route element={<ProtectedRoute />}>
-              <Route path="/user" element={<Users />} />
               <Route path="/home" element={<Home />} />
+              <Route path="/users" element={<Users />} />
+              <Route path="/users/:id" element={<User />} />
             </Route>
             <Route path="/" element={<Login />} />
           </Routes>
