@@ -7,6 +7,7 @@ import { UserProvider } from "./context/UserContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Users from "./pages/Users";
 import User from "./components/User";
+import Register from "./pages/Register";
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
               <Route path="/users/:id" element={<User />} />
             </Route>
             <Route path="/" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Routes>
         </Notification>
       </NotificationProvider>

@@ -25,6 +25,7 @@ export default function Login() {
     if (username.trim() && password.trim()) {
       try {
         const result = await loginService.login({ username, password });
+        console.log(result)
         setUser(result.username)
         localStorage.setItem("token", result.token);
         setNotification({ text: "Login Successful", status: "success" });
@@ -60,8 +61,9 @@ export default function Login() {
             onChange={handleChange}
           />
         </div>
-        <div style={{ marginTop: "1rem" }}>
+        <div style={{ marginTop: "1rem", display: "flex", gap: "1rem" }}>
           <button onClick={handleSubmit}>Login</button>
+          <button onClick={() => navigate("/register")}>Register</button>
         </div>
       </div>
     </>
