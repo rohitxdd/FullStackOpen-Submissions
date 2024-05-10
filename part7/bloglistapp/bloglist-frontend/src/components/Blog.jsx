@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import { IncrementLikeOfBlog, RemoveBlogByID, getAllBlog } from "../services/blogs";
+import { IncrementLikeOfBlog, RemoveBlogByID, addNewComment, getAllBlog } from "../services/blogs";
 import { useNotification } from "../context/NotificationContext";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../context/UserContext";
+import { useState } from "react";
 
 const blogStyle = {
   border: "1px solid black",
@@ -16,6 +17,7 @@ const Blog = () => {
   const { id } = useParams();
   const { state: { username } } = useUser()
   const navigate = useNavigate()
+  const [comment, setComment] = useState("")
 
   const { data, isLoading } = useQuery({
     queryKey: ['blog'],
@@ -37,6 +39,15 @@ const Blog = () => {
     }
   })
 
+  const { mutate: addComment } = useMutation({
+    mutationFn: addNewComment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blog'] })
+      setNotification({ text: "Comment added", status: "success" });
+      setComment("")
+    }
+  })
+
   if (isLoading) {
     return <h2>Loading...</h2>
   }
@@ -44,6 +55,12 @@ const Blog = () => {
 
   if (!blog) {
     return <Navigate to={"/home"} />
+  }
+
+  function handleCommentSubmit() {
+    if (comment.length > 0) {
+      addComment({ id, comment })
+    }
   }
 
   return (
@@ -81,6 +98,14 @@ const Blog = () => {
           <button onClick={() => navigate("/home")}>Back</button>
         </div>
       </div>
+      <h2>Comments</h2>
+      <input type="text" placeholder="add new comment" value={comment} onChange={(e) => setComment(e.target.value)} />
+      <button onClick={handleCommentSubmit}>Add Comment</button>
+      <ul>
+        {blog.comments.map((e, i) => {
+          return <li key={i}>{e}</li>
+        })}
+      </ul>
     </div>
   );
 };

@@ -31,3 +31,11 @@ export const RemoveBlogByID = async (blogid) => {
   const response = await axios.delete(url, { headers });
   return response;
 };
+
+export const addNewComment = async ({ id, comment }) => {
+  const token = localStorage.getItem("token");
+  const headers = { Authorization: `Bearer ${token}` };
+  let url = `${baseUrl}/${id}/comments`;
+  const response = await axios.post(url, { comment }, { headers });
+  return response;
+}

@@ -102,4 +102,17 @@ blogRouter.put("/like/:id", async (req, res) => {
   return res.status(201).json(blog);
 });
 
+blogRouter.post("/:id/comments", userExtractor, async (req, res) => {
+  const blog = await Blog.findById(req.params.id);
+  if (req.body?.comment?.length > 0) {
+    if (blog) {
+      blog.comments.push(req.body.comment)
+      await blog.save();
+      return res.status(201).json(blog);
+    }
+    return res.status(404).end();
+  }
+  return res.status(400).end();
+})
+
 module.exports = blogRouter;
