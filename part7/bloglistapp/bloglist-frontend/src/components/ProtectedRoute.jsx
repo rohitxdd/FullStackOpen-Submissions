@@ -23,8 +23,8 @@ export default function ProtectedRoute() {
     }
     return (
         <>
-            <h1>Blogs</h1>
             <UserSection />
+            <h1>Blog App</h1>
             <Outlet />
         </>
     )

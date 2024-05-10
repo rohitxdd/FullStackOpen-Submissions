@@ -14,11 +14,13 @@ export default function UserSection() {
     queryClient.invalidateQueries();
   }
   return (
-    <div>
-      <span>{username} logged in</span>
-      <span>
+    <div style={{ display: "flex", gap: "0.9rem", padding: "0px 10px", backgroundColor: "#80808063", alignItems: "center" }}>
+      <h3 style={{ cursor: "pointer", textDecoration: "underline" }} onClick={() => navigate("/home")}>Blogs</h3>
+      <h3 style={{ cursor: "pointer", textDecoration: "underline" }} onClick={() => navigate("/users")}>Users</h3>
+      <h3 style={{ cursor: "pointer" }}>{username} logged in</h3>
+      <div>
         <button onClick={logoutUser}>Logout</button>
-      </span>
+      </div>
     </div>
   );
 }
