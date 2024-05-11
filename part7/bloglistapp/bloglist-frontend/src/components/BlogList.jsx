@@ -6,13 +6,16 @@ export default function BlogList({ blogs }) {
     <>
       {blogs.length > 0 ? (
         <div className="blogs">
-          {blogs.map((blog) => (
-            <div key={blog.id} style={{ textDecoration: 'underline', cursor: "pointer", letterSpacing: "1px" }} onClick={() => navigate(`/blog/${blog.id}`)}>
-              <h3>
-                <strong data-testid="blog-title">{blog.title} </strong>
-              </h3>
-            </div>
-          ))}
+          <h1 className="text-2xl font-semibold text-slate-700 subpixel-antialiased leading-loose">Added blogs:</h1>
+          <ul className="list-decimal p-2 mx-5 font-medium text-lg">
+            {blogs.map((blog) => (
+              <li className="hover:underline underline-offset-2" key={blog.id} >
+                <span className="cursor-pointer" onClick={() => navigate(`/blog/${blog.id}`)}>
+                  {blog.title}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div >
       ) : (
         <>
