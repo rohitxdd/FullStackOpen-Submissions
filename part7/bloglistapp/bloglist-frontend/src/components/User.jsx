@@ -30,11 +30,13 @@ export default function User() {
 
     return (
         <>
-            <h1>{data.name}</h1>
-            <h2>added Blogs</h2>
-            <ul>
-                {data.blogs.map(e => (<li key={e.id}>{e.title}</li>))}
-            </ul>
+            <div className="mx-10 space-y-2">
+                <h1 className="text-2xl font-bold">user - {data.name}</h1>
+                <h2 className="text-lg">added Blogs</h2>
+                <ul className="list-disc ml-10">
+                    {data.blogs.map(e => (<li key={e.id}>{e.title}</li>))}
+                </ul>
+            </div>
         </>
     )
 }

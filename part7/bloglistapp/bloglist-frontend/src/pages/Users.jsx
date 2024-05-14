@@ -19,23 +19,17 @@ export default function Users() {
     }
 
     return (
-        <div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Blogs Created</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {query.data.map(e => {
-                        return <tr key={e.id}>
-                            <td onClick={() => navigate(`./${e.id}`)} style={{ cursor: "pointer" }}>{e.name.toUpperCase()}</td>
-                            <td>{e.blogs}</td>
-                        </tr>
-                    })}
-                </tbody>
-            </table>
+        <div className="flex justify-center">
+            <div className="grid grid-cols-2 mx-10 sm:max-w-lg mt-8">
+                <div className="font-semibold antialiased text-xl">Name</div>
+                <div className="font-semibold antialiased text-xl">Blogs Created</div>
+                {query.data.map(e => {
+                    return <>
+                        <div onClick={() => navigate(`./${e.id}`)} style={{ cursor: "pointer" }}>{e.name.toUpperCase()}</div>
+                        <div>{e.blogs}</div>
+                    </>
+                })}
+            </div>
         </div>
     )
 }

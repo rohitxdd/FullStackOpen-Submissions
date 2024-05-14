@@ -22,10 +22,9 @@ export default function ProtectedRoute() {
         return <Navigate to='/' />
     }
     return (
-        <>
+        <div className='min-h-screen bg-zinc-100'>
             <UserSection />
-            <h1>Blog App</h1>
             <Outlet />
-        </>
+        </div>
     )
 }

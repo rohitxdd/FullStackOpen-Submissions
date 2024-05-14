@@ -32,15 +32,20 @@ export default function Home() {
   const blogs = sortByLikes(data)
 
   return (
-    <div>
-      {formVisible ? (
-        <CreateBlog setFormVisibility={setFormVisibility} />
-      ) : (
-        <button onClick={() => setFormVisibility(true)}>New Blog</button>
-      )}
-      <BlogList
-        blogs={blogs ?? []}
-      />
+    <div className="flex flex-col sm:p-8 p-2">
+      <div className="">
+        {formVisible ? (
+          <CreateBlog setFormVisibility={setFormVisibility} />
+        ) : (
+          <>
+            <BlogList
+              blogs={blogs ?? []}
+            />
+            <button className="text-white bg-violet-700 hover:bg-violet-800 px-5 py-1 font-semibold rounded-md" onClick={() => setFormVisibility(true)}>New Blog</button>
+          </>
+
+        )}
+      </div>
     </div>
   );
 }
