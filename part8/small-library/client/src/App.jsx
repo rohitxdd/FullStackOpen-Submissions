@@ -1,7 +1,7 @@
 import Authors from "./components/Authors";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
-import { Router, Route, useNavigate } from "react-router-dom";
+import { Route, useNavigate, Routes } from "react-router-dom";
 
 const App = () => {
   const navigate = useNavigate();
@@ -12,11 +12,11 @@ const App = () => {
         <button onClick={() => navigate("/")}>books</button>
         <button onClick={() => navigate("/add")}>add book</button>
       </div>
-      <Router>
+      <Routes>
         <Route path="/" element={<Books />} />
         <Route path="/authors" element={<Authors />} />
         <Route path="/add" element={<NewBook />} />
-      </Router>
+      </Routes>
     </div>
   );
 };
