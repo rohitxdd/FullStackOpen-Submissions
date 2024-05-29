@@ -1,5 +1,25 @@
+import { gql, useQuery } from "@apollo/client"
+
+const ALL_BOOKS = gql`
+query{
+  allBooks {
+    title
+    author
+    published
+  }
+}
+`
 const Books = () => {
-  const books = []
+  const { loading, data, error } = useQuery(ALL_BOOKS)
+
+  if (loading) {
+    return <h2>Loading...</h2>
+  }
+
+  if (error) {
+    console.error(error)
+    return <h2>Something went wrong!!!</h2>
+  }
 
   return (
     <div>
@@ -12,7 +32,7 @@ const Books = () => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {books.map((a) => (
+          {data.allBooks.map((a) => (
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author}</td>
