@@ -1,4 +1,5 @@
 import { gql, useQuery } from "@apollo/client"
+import { useNavigate } from "react-router-dom"
 
 const ALL_AUTHORS = gql`
 query {
@@ -11,6 +12,7 @@ query {
 `
 
 const Authors = () => {
+  const navigate = useNavigate()
   const { loading, data, error } = useQuery(ALL_AUTHORS)
   if (loading) {
     return <h2>Loading...</h2>
@@ -39,6 +41,7 @@ const Authors = () => {
           ))}
         </tbody>
       </table>
+      <button onClick={() => navigate("/update-birth")}>Update birth Year</button>
     </div>
   )
 }

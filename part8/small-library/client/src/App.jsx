@@ -2,6 +2,7 @@ import Authors from "./components/Authors";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
 import { Route, useNavigate, Routes } from "react-router-dom";
+import UpdateBirth from "./components/UpdateBirth";
 
 const App = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ const App = () => {
         <Route path="/" element={<Books />} />
         <Route path="/authors" element={<Authors />} />
         <Route path="/add" element={<NewBook />} />
+        <Route path="/update-birth" element={<UpdateBirth />} />
       </Routes>
     </div>
   );
