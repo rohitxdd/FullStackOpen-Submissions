@@ -1,4 +1,18 @@
+import { gql, useMutation, useApolloClient } from "@apollo/client"
 import { useState } from 'react'
+import { Navigate } from "react-router-dom"
+
+
+const ADD_BOOK = gql`
+mutation AddBook($title: String!, $published: Int!, $genres: [String!]!, $author: String!) {
+  addBook(title: $title, published: $published, genres: $genres, author: $author) {
+    title
+    author
+    published
+  }
+}
+`
+
 
 const NewBook = () => {
   const [title, setTitle] = useState('')
@@ -7,17 +21,35 @@ const NewBook = () => {
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
 
+  const client = useApolloClient()
+
+  const [createBook, { data, loading, error }] = useMutation(ADD_BOOK, {
+    onCompleted: () => {
+      console.log("refetching all queries...")
+      client.refetchQueries({
+        include: "all"
+      })
+    }
+  })
+
+  if (loading) return "submitting..."
+  if (error) return `Submission error ${error.message}`
+  if (data) {
+    return <Navigate to="/" replace />
+  }
 
   const submit = async (event) => {
     event.preventDefault()
 
-    console.log('add book...')
-
-    setTitle('')
-    setPublished('')
-    setAuthor('')
-    setGenres([])
-    setGenre('')
+    if (title && author && published && genres.length > 0) {
+      console.log('add book...')
+      createBook({ variables: { title, author, published: Number(published), genres } })
+      setTitle('')
+      setPublished('')
+      setAuthor('')
+      setGenres([])
+      setGenre('')
+    }
   }
 
   const addGenre = () => {
