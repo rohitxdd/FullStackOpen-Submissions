@@ -1,6 +1,23 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
-const { v1: uuid } = require('uuid')
+const { GraphQLError } = require("graphql")
+const mongoose = require('mongoose')
+mongoose.set('strictQuery', false)
+
+require('dotenv').config()
+const Author = require("./model/AuthorModel")
+const Book = require("./model/BookModel")
+
+const MONGODB_URI = process.env.MONGODB_URI
+
+mongoose.connect(MONGODB_URI)
+    .then(() => {
+        console.log('connected to MongoDB')
+    })
+    .catch((error) => {
+        console.log('error connection to MongoDB:', error.message)
+        process.exit(-1)
+    })
 
 let authors = [
     {
@@ -85,7 +102,7 @@ const typeDefs = `
   type Book {
     title: String!
     published: Int!
-    author: String!
+    author: Author!
     id: ID!
     genres: [String!]!
   }
@@ -134,14 +151,26 @@ const resolvers = {
     },
 
     Mutation: {
-        addBook: (root, args) => {
-            const book = { ...args, id: uuid() }
-            books = books.concat(book)
-            const author = authors.find(a => a.name === args.author)
-            if (!author) {
-                authors = authors.concat({ name: args.author, id: uuid() })
+        addBook: async (root, args) => {
+            try {
+                const book = new Book({ ...args })
+                const author = await Author.findOne({ name: args.author })
+                if (!author) {
+                    const authorObj = new Author({ name: args.author })
+                    const res = await authorObj.save()
+                    book.author = res.id
+                } else {
+                    book.author = author.id
+                }
+                return book.save()
+            } catch (e) {
+                throw new GraphQLError("SomeError occured", {
+                    extensions: {
+                        code: 'BAD_REQUEST'
+                    }
+                })
             }
-            return book
+
         },
         editAuthor: (root, args) => {
             const authorIndex = authors.findIndex(e => e.name === args.name)
