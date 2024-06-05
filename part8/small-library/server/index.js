@@ -78,22 +78,35 @@ const resolvers = {
     Mutation: {
         addBook: async (root, args) => {
             try {
-                const book = new Book({ ...args })
-                const author = await Author.findOne({ name: args.author })
+                const author = await Author.findOne({ name: args.author });
+                let authorId;
+
                 if (!author) {
-                    const authorObj = new Author({ name: args.author })
-                    const res = await authorObj.save()
-                    book.author = res.id
+                    const authorObj = new Author({ name: args.author });
+                    const res = await authorObj.save();
+                    authorId = res.id;
                 } else {
-                    book.author = author.id
+                    authorId = author.id;
                 }
-                return book.save()
+
+                const book = new Book({ ...args, author: authorId });
+
+                await book.validate();
+
+                return await book.save();
             } catch (e) {
-                throw new GraphQLError("SomeError occured", {
+                let errorMessage = "Some Error occurred";
+
+                if (e instanceof mongoose.Error.ValidationError) {
+                    errorMessage = e.message;
+                }
+
+                throw new GraphQLError(errorMessage, {
                     extensions: {
-                        code: 'BAD_REQUEST'
+                        code: 'BAD_REQUEST',
+                        exception: e
                     }
-                })
+                });
             }
         },
         editAuthor: async (root, args) => {
