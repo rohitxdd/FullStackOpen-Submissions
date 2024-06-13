@@ -7,7 +7,6 @@ const ADD_BOOK = gql`
 mutation AddBook($title: String!, $published: Int!, $genres: [String!]!, $author: String!) {
   addBook(title: $title, published: $published, genres: $genres, author: $author) {
     title
-    author
     published
   }
 }
@@ -33,7 +32,9 @@ const NewBook = () => {
   })
 
   if (loading) return "submitting..."
-  if (error) return `Submission error ${error.message}`
+  if (error) {
+    return `Submission error ${error.message}`
+  }
   if (data) {
     return <Navigate to="/" replace />
   }

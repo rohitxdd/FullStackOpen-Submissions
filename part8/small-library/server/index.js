@@ -91,7 +91,6 @@ const resolvers = {
         },
         allAuthors: async () => Author.find({}),
         me: (root, args, context) => {
-            console.log(context)
             return null
         }
     },
@@ -212,10 +211,9 @@ const server = new ApolloServer({
 startStandaloneServer(server, {
     listen: { port: 4000 },
     context: async ({ req, res }) => {
-
         try {
             const auth = req ? req.headers.authorization : null
-            if (auth && auth.startsWith('Bearer ')) {
+            if (auth && auth.startsWith('Bearer ') && auth.substring(7).length > 0) {
                 const decodedToken = jwt.verify(
                     auth.substring(7), process.env.JWT_SECRET
                 )
@@ -224,14 +222,8 @@ startStandaloneServer(server, {
                 return { currentUser }
             }
         } catch (e) {
-            throw new GraphQLError(e.message, {
-                extensions: {
-                    code: 'INVALID_TOKEN',
-                    exception: e
-                }
-            });
+            return { currentUser: null }
         }
-
     },
 }).then(({ url }) => {
     console.log(`Server ready at ${url}`)
