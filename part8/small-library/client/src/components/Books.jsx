@@ -2,8 +2,8 @@ import { gql, useQuery } from "@apollo/client"
 import { useState } from "react"
 
 const ALL_BOOKS = gql`
-query{
-  allBooks {
+query Query($genre: String) {
+  allBooks(genre: $genre) {
     author {
       name
     }
@@ -11,11 +11,13 @@ query{
     published
     genres
   }
+  allgenres
 }
 `
 const Books = () => {
-  const { loading, data, error } = useQuery(ALL_BOOKS)
   const [selectedGenres, setSelectedGenres] = useState(null)
+  const { loading, data, error } = useQuery(ALL_BOOKS, { variables: { genre: selectedGenres } })
+
   if (loading) {
     return <h2>Loading...</h2>
   }
@@ -23,16 +25,6 @@ const Books = () => {
   if (error) {
     return <h2>Something went wrong!!!</h2>
   }
-
-  const arrOfGenres = []
-
-  data.allBooks.forEach(e => {
-    arrOfGenres.push(...e.genres)
-  })
-
-  const uniqueGenres = Array.from(new Set(arrOfGenres))
-
-  const filterData = selectedGenres ? data.allBooks.filter(e => e.genres.includes(selectedGenres)) : data.allBooks
 
   const handleGenresSelection = (genre) => {
     setSelectedGenres(genre)
@@ -49,7 +41,7 @@ const Books = () => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {filterData.map((a) => (
+          {data.allBooks.map((a) => (
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
@@ -59,7 +51,7 @@ const Books = () => {
         </tbody>
       </table>
 
-      {uniqueGenres.map(e => (<button key={e} onClick={() => handleGenresSelection(e)}>{e}</button>))}
+      {data.allgenres.map(e => (<button key={e} onClick={() => handleGenresSelection(e)}>{e}</button>))}
       <button onClick={() => handleGenresSelection(null)}>all genres</button>
 
     </div>
