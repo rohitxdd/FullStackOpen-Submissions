@@ -28,6 +28,7 @@ const NewBook = () => {
       client.refetchQueries({
         include: "all"
       })
+      client.resetStore()
     }
   })
 
