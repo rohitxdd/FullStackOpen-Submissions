@@ -91,7 +91,8 @@ const resolvers = {
         },
         allAuthors: async () => Author.find({}),
         me: (root, args, context) => {
-            return null
+            const { currentUser } = context
+            return currentUser
         }
     },
 
@@ -188,6 +189,7 @@ const resolvers = {
                     const userForToken = {
                         username: user.username,
                         id: user._id,
+                        favoriteGenre: user.favoriteGenre
                     }
                     return { value: jwt.sign(userForToken, process.env.JWT_SECRET) }
                 }

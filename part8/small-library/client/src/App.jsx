@@ -7,15 +7,22 @@ import Login from "./components/Login";
 import { useState } from "react"
 import { UserContext } from "./hooks/UserContext"
 import { useEffect } from "react";
+import Recommend from "./components/Recommend";
+import { jwtDecode } from "jwt-decode";
 
 const App = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState("");
+  const [user, setUser] = useState(null);
 
 
   function setUserToken(token) {
     localStorage.setItem("user-token", JSON.stringify(token))
-    setUser(token)
+    if (!token) {
+      setUser(null)
+    } else {
+      const decoded = jwtDecode(token);
+      setUser(decoded)
+    }
   }
 
   useEffect(() => {
@@ -33,7 +40,8 @@ const App = () => {
           {user &&
             <>
               <button onClick={() => navigate("/add")}>add book</button>
-              <button onClick={() => setUserToken("")}>Logout</button>
+              <button onClick={() => navigate("/recommend")}>Recommendation</button>
+              <button onClick={() => setUserToken(null)}>Logout</button>
             </>
           }
           {!user && <button onClick={() => navigate('/login')}>Login</button>}
@@ -44,6 +52,7 @@ const App = () => {
           <Route path="/add" element={<NewBook />} />
           <Route path="/update-birth" element={<UpdateBirth />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/recommend" element={<Recommend />} />
         </Routes>
       </div>
     </UserContext.Provider>
