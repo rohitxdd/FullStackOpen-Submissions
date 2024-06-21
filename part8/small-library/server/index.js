@@ -82,7 +82,12 @@ const resolvers = {
         allBooks: async (root, args) => {
             let query = {};
             if (args.author) {
-                query.author = args.author;
+                const authurObj = await Author.findOne({ name: args.author })
+                if (authurObj) {
+                    query.author = authurObj.id;
+                } else {
+                    query.author = new mongoose.Types.ObjectId();
+                }
             }
             if (args.genre) {
                 query.genres = args.genre;
