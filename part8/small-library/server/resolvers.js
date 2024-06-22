@@ -28,7 +28,24 @@ const resolvers = {
             const books = await Book.find(query).populate('author')
             return books;
         },
-        allAuthors: async () => Author.find({}),
+        allAuthors: async () => {
+            return await Author.aggregate([
+                {
+                    $lookup: {
+                        from: 'books',
+                        localField: '_id',
+                        foreignField: 'author',
+                        as: 'books'
+                    }
+                },
+                {
+                    $project: {
+                        name: 1,
+                        bookCount: { $size: '$books' }
+                    }
+                }
+            ]);
+        },
         me: (root, args, context) => {
             const { currentUser } = context
             return currentUser
@@ -43,10 +60,6 @@ const resolvers = {
             });
             return Array.from(genresSet);
         }
-    },
-
-    Author: {
-        bookCount: async (root) => Book.countDocuments({ author: root.id })
     },
 
     Mutation: {
