@@ -29,9 +29,11 @@ const App = () => {
   const [user, setUser] = useState(null);
 
   useSubscription(BOOK_ADDED, {
-    onData: ({ data }) => {
-      console.log(data)
-      window.alert("websocket stream coming...")
+    onData: ({ client }) => {
+      client.refetchQueries({
+        include: "all"
+      })
+      client.resetStore()
     },
     onError: (e) => {
       console.log(e)

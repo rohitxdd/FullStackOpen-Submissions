@@ -1,4 +1,4 @@
-import { gql, useMutation, useApolloClient } from "@apollo/client"
+import { gql, useMutation } from "@apollo/client"
 import { useState } from 'react'
 import { Navigate } from "react-router-dom"
 
@@ -20,15 +20,9 @@ const NewBook = () => {
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
 
-  const client = useApolloClient()
-
   const [createBook, { data, loading, error }] = useMutation(ADD_BOOK, {
     onCompleted: () => {
-      console.log("refetching all queries...")
-      client.refetchQueries({
-        include: "all"
-      })
-      client.resetStore()
+      console.log('book added')
     }
   })
 
