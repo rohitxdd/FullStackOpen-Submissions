@@ -9,11 +9,35 @@ import { UserContext } from "./hooks/UserContext"
 import { useEffect } from "react";
 import Recommend from "./components/Recommend";
 import { jwtDecode } from "jwt-decode";
+import { useSubscription, gql } from '@apollo/client'
+
+const BOOK_ADDED = gql`
+  subscription {
+    bookAdded {
+      author {
+          name
+        }
+        title
+        published
+        genres
+    }
+  }
+`
 
 const App = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      console.log(data)
+      window.alert("websocket stream coming...")
+    },
+    onError: (e) => {
+      console.log(e)
+      console.log(e.message)
+    },
+  })
 
   function setUserToken(token) {
     localStorage.setItem("user-token", JSON.stringify(token))

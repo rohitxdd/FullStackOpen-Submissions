@@ -78,6 +78,7 @@ const resolvers = {
                 await book.validate();
 
                 await book.save();
+                await book.populate('author')
 
                 pubsub.publish('BOOK_ADDED', { bookAdded: book })
                 return book
