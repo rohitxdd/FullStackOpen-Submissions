@@ -1,3 +1,15 @@
+import { argv } from "node:process";
+import { tryParseInt } from "./Utils";
+
+if (argv.length < 4) {
+  throw new Error("Invalid Arguments");
+}
+
+const hours = argv.slice(3).map((e) => tryParseInt(e));
+const target = tryParseInt(argv[2]);
+
+console.log(calculateExercises(hours, target));
+
 interface result {
   periodLength: number;
   trainingDays: number;
@@ -37,5 +49,3 @@ function calculateExercises(hours: number[], targetAmount: number): result {
     average,
   };
 }
-
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2));
