@@ -1,10 +1,7 @@
-type CoursePartDetail = {
-  name: string;
-  exerciseCount: number;
-};
+import { CoursePart } from "../App";
 
 interface ContentPropsType {
-  data: CoursePartDetail[];
+  data: CoursePart[];
 }
 
 export default function Content({ data }: ContentPropsType): JSX.Element {
