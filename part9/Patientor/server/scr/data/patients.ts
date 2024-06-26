@@ -1,6 +1,6 @@
 import { PatientsEntry } from "../types";
 
-const data: PatientsEntry[] = [
+const data = [
   {
     id: "d2773336-f723-11e9-8f0b-362b9e155667",
     name: "John McClane",
@@ -43,4 +43,6 @@ const data: PatientsEntry[] = [
   },
 ];
 
-export default data;
+const patientsEntry: PatientsEntry[] = data.map((e) => e as PatientsEntry);
+
+export default patientsEntry;
