@@ -6,6 +6,7 @@ import patientsRouter from "./scr/routes/patients.routes";
 const app = express();
 // eslint-disable-next-line @typescript-eslint/no-unsafe-call
 app.use(cors());
+app.use(express.json());
 app.get("/api/ping", (_, res) => {
   res.status(200).send("pong");
 });
