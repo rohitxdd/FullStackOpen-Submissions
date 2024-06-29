@@ -1,6 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import "./NewDiary.styles.css";
-import { DiaryEntry, NewDiaryEntry } from "../types";
+import { DiaryEntry, NewDiaryEntry, Visibility, Weather } from "../types";
 import { addNewDiaryEntry } from "../services/diaries";
 
 interface NewDiariesFormProps {
@@ -53,24 +53,44 @@ export default function NewDiaryEntryForm({
           <input
             onChange={(e) => setDate(e.target.value)}
             value={date}
-            type="text"
+            type="date"
           />
         </div>
         <h3>Visibility:</h3>
         <div>
-          <input
-            onChange={(e) => setVisibility(e.target.value)}
-            value={visibility}
-            type="text"
-          />
+          {Object.keys(Visibility).map((elem) => {
+            const value = Visibility[elem as keyof typeof Visibility];
+            return (
+              <React.Fragment key={elem}>
+                <span>{elem}: </span>
+                <input
+                  type="radio"
+                  name="visibility"
+                  value={value}
+                  checked={visibility === value}
+                  onChange={(e) => setVisibility(e.target.value)}
+                />{" "}
+              </React.Fragment>
+            );
+          })}
         </div>
         <h3>Weather:</h3>
         <div>
-          <input
-            onChange={(e) => setWeather(e.target.value)}
-            value={weather}
-            type="text"
-          />
+          {Object.keys(Weather).map((elem) => {
+            const value = Weather[elem as keyof typeof Weather];
+            return (
+              <React.Fragment key={elem}>
+                <span>{elem}: </span>
+                <input
+                  type="radio"
+                  name="weather"
+                  value={value}
+                  checked={weather === value}
+                  onChange={(e) => setWeather(e.target.value)}
+                />{" "}
+              </React.Fragment>
+            );
+          })}
         </div>
         <h3>Comment:</h3>
         <div>
