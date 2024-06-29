@@ -35,4 +35,15 @@ router.post("/patients", (req, res) => {
   }
 });
 
+router.get("/patients/:id", (req, res) => {
+  const id = req.params.id;
+  if (id) {
+    const result = PatientService.findPatientById(id);
+    if (res) {
+      return res.status(200).json(result);
+    }
+  }
+  return res.status(404);
+});
+
 export default router;

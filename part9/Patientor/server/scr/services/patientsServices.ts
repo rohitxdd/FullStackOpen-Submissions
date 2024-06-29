@@ -17,9 +17,18 @@ function newPatientEntry(
     occupation: String(occupation),
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     id: uuid(),
+    entries: [], //empty for now
   };
   data.push(newEntry);
   return newEntry;
+}
+
+function findPatientById(id: string) {
+  const res = data.find((e) => e.id === id);
+  if (res) {
+    res.entries = [];
+  }
+  return res;
 }
 
 function parseString(str: unknown): string {
@@ -47,4 +56,4 @@ const isString = (text: unknown): boolean => {
   return typeof text === "string" || text instanceof String;
 };
 
-export { newPatientEntry };
+export { newPatientEntry, findPatientById };
