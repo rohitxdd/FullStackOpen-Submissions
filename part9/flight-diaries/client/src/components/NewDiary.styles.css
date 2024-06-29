@@ -1,0 +1,9 @@
+.form {
+  display: grid;
+  grid-template-columns: 100px auto;
+  align-items: center;
+}
+
+.form > h3 {
+  margin: 5px 3px;
+}

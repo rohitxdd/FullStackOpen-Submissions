@@ -15,6 +15,7 @@ export default function DiariesListPage({ DiariesList }: DiariesListProps) {
             <h4>{e.date}</h4>
             <p>visibility: {e.visibility}</p>
             <p>weather: {e.weather}</p>
+            <p>Comment: {e.comment}</p>
           </React.Fragment>
         );
       })}
