@@ -8,11 +8,19 @@ const getAll = async (): Promise<DiaryEntry[]> => {
 };
 
 const addNewDiaryEntry = async (object: NewDiaryEntry) => {
-  const { data } = await axios.post<DiaryEntry>(
-    `${apiBaseUrl}/diaries`,
-    object
-  );
-  return data;
+  try {
+    const { data } = await axios.post<DiaryEntry>(
+      `${apiBaseUrl}/diaries`,
+      object
+    );
+    return data;
+  } catch (e) {
+    if (axios.isAxiosError(e)) {
+      throw new Error(e.response?.data);
+    } else {
+      throw new Error("Something went wrong");
+    }
+  }
 };
 
 export { getAll, addNewDiaryEntry };

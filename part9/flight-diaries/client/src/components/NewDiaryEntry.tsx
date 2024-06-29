@@ -5,9 +5,13 @@ import { addNewDiaryEntry } from "../services/diaries";
 
 interface NewDiariesFormProps {
   addDiaries: (obj: DiaryEntry) => void;
+  setErrorMsg: (msg: string) => void;
 }
 
-export default function NewDiaryEntryForm({ addDiaries }: NewDiariesFormProps) {
+export default function NewDiaryEntryForm({
+  addDiaries,
+  setErrorMsg,
+}: NewDiariesFormProps) {
   const [date, setDate] = useState("");
   const [visibility, setVisibility] = useState("");
   const [weather, setWeather] = useState("");
@@ -33,7 +37,11 @@ export default function NewDiaryEntryForm({ addDiaries }: NewDiariesFormProps) {
       console.log(res);
       addDiaries(res);
     } catch (e) {
-      console.log(e);
+      let error = "Something went wrong";
+      if (e instanceof Error) {
+        error = e.message;
+      }
+      setErrorMsg(error);
     }
   }
   return (
