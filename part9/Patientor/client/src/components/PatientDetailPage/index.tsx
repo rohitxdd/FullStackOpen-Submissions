@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import patientService from "../../services/patients";
-import { Patient } from "../../types";
+import diagnosesService from "../../services/diagnoses";
+import { Diagnosis, Patient } from "../../types";
 import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
 import TransgenderIcon from "@mui/icons-material/Transgender";
@@ -22,12 +23,15 @@ function GenderIcon({ gender }: { gender: "male" | "female" | "other" }) {
 export default function PatientDetailPage() {
   const { id } = useParams();
   const [data, setData] = useState<Patient | null>(null);
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[] | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     async function getDetails(id: string) {
       const result = await patientService.getPatientDetails(id);
+      const diaresult = await diagnosesService.getAllDiagnoses();
       setData(result);
+      setDiagnoses(diaresult);
     }
     if (id) {
       void getDetails(id);
@@ -50,9 +54,15 @@ export default function PatientDetailPage() {
             <React.Fragment key={e.id}>
               <p>{e.description}</p>
               <ul>
-                {e.diagnosisCodes?.map((code) => (
-                  <li key={code}>{code}</li>
-                ))}
+                {e.diagnosisCodes?.map((code) => {
+                  const diagnosesDesc =
+                    diagnoses?.find((e) => e.code === code)?.name || "";
+                  return (
+                    <li key={code}>
+                      {code}: {diagnosesDesc}
+                    </li>
+                  );
+                })}
               </ul>
             </React.Fragment>
           );
