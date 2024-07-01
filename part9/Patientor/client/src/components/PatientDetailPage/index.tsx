@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import patientService from "../../services/patients";
 import { Patient } from "../../types";
@@ -44,6 +44,19 @@ export default function PatientDetailPage() {
         </h2>
         <h4>ssn: {data.ssn}</h4>
         <h4>occupation: {data.occupation}</h4>
+        <h3>Entries</h3>
+        {data.entries.map((e) => {
+          return (
+            <React.Fragment key={e.id}>
+              <p>{e.description}</p>
+              <ul>
+                {e.diagnosisCodes?.map((code) => (
+                  <li key={code}>{code}</li>
+                ))}
+              </ul>
+            </React.Fragment>
+          );
+        })}
       </div>
     )
   );
