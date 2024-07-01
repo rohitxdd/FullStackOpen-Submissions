@@ -25,9 +25,6 @@ function newPatientEntry(
 
 function findPatientById(id: string) {
   const res = data.find((e) => e.id === id);
-  if (res) {
-    res.entries = [];
-  }
   return res;
 }
 
