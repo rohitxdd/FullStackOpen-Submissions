@@ -6,6 +6,7 @@ import { Diagnosis, Patient } from "../../types";
 import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
 import TransgenderIcon from "@mui/icons-material/Transgender";
+import EntryDetails from "../EntryDetails/EntryDetails";
 
 function GenderIcon({ gender }: { gender: "male" | "female" | "other" }) {
   switch (gender) {
@@ -48,25 +49,16 @@ export default function PatientDetailPage() {
         </h2>
         <h4>ssn: {data.ssn}</h4>
         <h4>occupation: {data.occupation}</h4>
-        <h3>Entries</h3>
-        {data.entries.map((e) => {
-          return (
-            <React.Fragment key={e.id}>
-              <p>{e.description}</p>
-              <ul>
-                {e.diagnosisCodes?.map((code) => {
-                  const diagnosesDesc =
-                    diagnoses?.find((e) => e.code === code)?.name || "";
-                  return (
-                    <li key={code}>
-                      {code}: {diagnosesDesc}
-                    </li>
-                  );
-                })}
-              </ul>
-            </React.Fragment>
-          );
-        })}
+        {data.entries.length > 0 ? (
+          <>
+            <h3>Entries</h3>
+            {data.entries.map((e) => (
+              <EntryDetails entry={e} />
+            ))}
+          </>
+        ) : (
+          <h3>No Entries Found</h3>
+        )}
       </div>
     )
   );

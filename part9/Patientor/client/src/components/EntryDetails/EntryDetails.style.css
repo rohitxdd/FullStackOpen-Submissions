@@ -1,0 +1,10 @@
+.details {
+  border: 1px solid black;
+  border-radius: 1rem;
+  padding: 5px 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0.75rem;
+  font-weight: 600;
+}
