@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 import data from "../data/patients";
-import { NonSensitivePatientsEntry } from "../types";
+import { NewEntry, NonSensitivePatientsEntry } from "../types";
 import * as PatientService from "../services/patientsServices";
 
 router.get("/patients", (_req, res) => {
@@ -44,6 +44,33 @@ router.get("/patients/:id", (req, res) => {
     }
   }
   return res.status(404);
+});
+
+router.post("/:id/entries", (req, res) => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const { description, date, specialist, type, ...rest } = req.body as NewEntry;
+  const patientid = req.params.id;
+  if (!description || !date || !specialist || !type) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+  try {
+    const newEntry = PatientService.parseNewEntryData(
+      description,
+      date,
+      specialist,
+      type,
+      rest
+    );
+    const result = PatientService.newEntryService(newEntry, patientid);
+    if (result >= 0) {
+      return res
+        .status(201)
+        .json({ message: "new entry added", data: newEntry });
+    }
+    return res.status(404).json({ message: "patient not found" });
+  } catch (e) {
+    return res.status(400).json({ error: "Bad Request" });
+  }
 });
 
 export default router;
