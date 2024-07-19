@@ -63,9 +63,7 @@ router.post("/:id/entries", (req, res) => {
     );
     const result = PatientService.newEntryService(newEntry, patientid);
     if (result >= 0) {
-      return res
-        .status(201)
-        .json({ message: "new entry added", data: newEntry });
+      return res.status(201).json(newEntry);
     }
     return res.status(404).json({ message: "patient not found" });
   } catch (e) {
