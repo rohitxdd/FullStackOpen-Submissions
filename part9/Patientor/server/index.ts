@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
-import diagnosesRouter from "./scr/routes/diagnoses.routes";
-import patientsRouter from "./scr/routes/patients.routes";
+import diagnosesRouter from "./src/routes/diagnoses.routes";
+import patientsRouter from "./src/routes/patients.routes";
 
 const app = express();
 // eslint-disable-next-line @typescript-eslint/no-unsafe-call
