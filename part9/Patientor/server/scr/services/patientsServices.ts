@@ -64,9 +64,7 @@ function parseNewEntryData(
         date: newEntry.date,
         specialist: newEntry.specialist,
         type: "HealthCheck",
-        healthCheckRating: parseFloat(
-          parseString(rest.healthCheckRating)
-        ) as HealthCheckRating,
+        healthCheckRating: Number(rest.healthCheckRating) as HealthCheckRating,
       };
       return healthCheckEntry;
     case "Hospital":
