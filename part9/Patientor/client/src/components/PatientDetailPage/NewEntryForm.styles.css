@@ -1,0 +1,17 @@
+.form-border {
+  border: 2px dotted black;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.button-wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+.error-box {
+  background-color: red;
+  border-radius: 6px;
+}
