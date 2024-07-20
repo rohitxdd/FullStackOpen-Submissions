@@ -14,6 +14,7 @@ import {
   Input,
   InputLabel,
   MenuItem,
+  OutlinedInput,
   Select,
   SelectChangeEvent,
 } from "@mui/material";
@@ -24,6 +25,7 @@ import {
 } from "../../validation/newEntry";
 import patients from "../../services/patients";
 import { AxiosError } from "axios";
+import diagnoses from "../../services/diagnoses";
 
 interface NewEntryProps {
   setForm: (x: boolean) => void;
@@ -40,11 +42,11 @@ export default function NewEntryForm({
 }: NewEntryProps) {
   const [error, setError] = useState<string | null>(null);
   const [type, setType] = useState<EntryTypes>("HealthCheck");
+  const [selecteddiaCode, setSelectedDiaCodes] = useState<string[]>([]);
   const DescriptionRef = useRef<HTMLInputElement>();
   const dateRef = useRef<HTMLInputElement>();
   const SpecialistRef = useRef<HTMLInputElement>();
   const healthRef = useRef<HTMLInputElement>();
-  const diagnosisRef = useRef<HTMLInputElement>();
   const dischargeRef = useRef<HTMLInputElement>();
   const criteriaRef = useRef<HTMLInputElement>();
   const employerRef = useRef<HTMLInputElement>();
@@ -57,6 +59,16 @@ export default function NewEntryForm({
     throw new Error("diagnoses code are null");
   }
   const diagnosesCodes = diagnosesCode.map((e) => e.code);
+
+  const handleChange = (event: SelectChangeEvent<typeof selecteddiaCode>) => {
+    const {
+      target: { value },
+    } = event;
+    setSelectedDiaCodes(
+      // On autofill we get a stringified value.
+      typeof value === "string" ? value.split(",") : value
+    );
+  };
 
   async function handleSubmission() {
     setError(null);
@@ -124,21 +136,16 @@ export default function NewEntryForm({
         EntryObj = obj as OccupationalHealthcareEntry;
       }
     }
-    if (diagnosisRef.current?.value) {
-      const selectedDiagnoseCodes = diagnosisRef.current?.value
-        .split(",")
-        .map((e) => e.trim());
-      if (selectedDiagnoseCodes.length > 0) {
-        console.log(selectedDiagnoseCodes);
-        for (let index = 0; index < selectedDiagnoseCodes.length; index++) {
-          const element = selectedDiagnoseCodes[index];
-          if (!diagnosesCodes.includes(element)) {
-            setError("Invalid Diagnoses code");
-            return;
-          }
+
+    if (selecteddiaCode.length > 0) {
+      for (let index = 0; index < selecteddiaCode.length; index++) {
+        const element = selecteddiaCode[index];
+        if (!diagnosesCodes.includes(element)) {
+          setError("Invalid Diagnoses code");
+          return;
         }
       }
-      EntryObj.diagnosisCodes = selectedDiagnoseCodes;
+      EntryObj.diagnosisCodes = selecteddiaCode;
     }
 
     try {
@@ -231,8 +238,20 @@ export default function NewEntryForm({
         </>
       )}
       <div>
-        <InputLabel>Diagnosis Codes</InputLabel>
-        <Input fullWidth type="text" inputRef={diagnosisRef}></Input>
+        <InputLabel id="diagnoses-multi">Diagnosis</InputLabel>
+        <Select
+          labelId="diagnoses-multi"
+          multiple
+          value={selecteddiaCode}
+          onChange={handleChange}
+          input={<OutlinedInput label="Name" />}
+        >
+          {diagnosesCode.map((d) => (
+            <MenuItem key={d.code} value={d.code}>
+              {d.name}
+            </MenuItem>
+          ))}
+        </Select>
       </div>
       <div className="button-wrapper">
         <Button variant="contained" color="primary" onClick={handleSubmission}>
