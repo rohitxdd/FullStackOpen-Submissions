@@ -1,8 +1,27 @@
 import { useRef, useState } from "react";
-import { Diagnosis, Entry } from "../../types";
+import {
+  Diagnosis,
+  Entry,
+  EntryTypes,
+  HealthCheckEntry,
+  HospitalEntry,
+  OccupationalHealthcareEntry,
+} from "../../types";
 import "./NewEntryForm.styles.css";
-import { Alert, Button, Input, InputLabel } from "@mui/material";
-import { NewHealthCheckValidation } from "../../validation/newEntry";
+import {
+  Alert,
+  Button,
+  Input,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
+import {
+  NewHealthCheckValidation,
+  NewHospitalValidation,
+  NewOccupationalValidation,
+} from "../../validation/newEntry";
 import patients from "../../services/patients";
 import { AxiosError } from "axios";
 
@@ -20,11 +39,19 @@ export default function NewEntryForm({
   onData,
 }: NewEntryProps) {
   const [error, setError] = useState<string | null>(null);
+  const [type, setType] = useState<EntryTypes>("HealthCheck");
   const DescriptionRef = useRef<HTMLInputElement>();
   const dateRef = useRef<HTMLInputElement>();
   const SpecialistRef = useRef<HTMLInputElement>();
   const healthRef = useRef<HTMLInputElement>();
   const diagnosisRef = useRef<HTMLInputElement>();
+  const dischargeRef = useRef<HTMLInputElement>();
+  const criteriaRef = useRef<HTMLInputElement>();
+  const employerRef = useRef<HTMLInputElement>();
+  const sickFromRef = useRef<HTMLInputElement>();
+  const sickToRef = useRef<HTMLInputElement>();
+
+  const EntryTuple = ["HealthCheck", "Hospital", "OccupationalHealthcare"];
 
   if (diagnosesCode == null) {
     throw new Error("diagnoses code are null");
@@ -33,50 +60,128 @@ export default function NewEntryForm({
 
   async function handleSubmission() {
     setError(null);
-    const obj = {
-      date: dateRef?.current?.value,
-      specialist: SpecialistRef?.current?.value,
-      type: "HealthCheck",
-      description: DescriptionRef?.current?.value,
-      healthCheckRating: Number(healthRef?.current?.value ?? 0),
-    };
-    const result = NewHealthCheckValidation.safeParse(obj);
-    if (!result.success) {
-      const errors = JSON.parse(result.error.message);
-      setError(`${errors[0].path[0]} : ${errors[0].message}`);
+
+    let EntryObj: Entry;
+
+    if (type === "HealthCheck") {
+      const obj = {
+        date: dateRef?.current?.value,
+        specialist: SpecialistRef?.current?.value,
+        type,
+        description: DescriptionRef?.current?.value,
+        healthCheckRating: Number(healthRef?.current?.value ?? 0),
+      };
+
+      const result = NewHealthCheckValidation.safeParse(obj);
+      if (!result.success) {
+        const errors = JSON.parse(result.error.message);
+        setError(`${errors[0].path[0]} : ${errors[0].message}`);
+        return;
+      } else {
+        EntryObj = obj as HealthCheckEntry;
+      }
+    } else if (type === "Hospital") {
+      const obj = {
+        date: dateRef?.current?.value,
+        specialist: SpecialistRef?.current?.value,
+        type,
+        description: DescriptionRef?.current?.value,
+        discharge: {
+          date: dischargeRef?.current?.value,
+          criteria: criteriaRef?.current?.value,
+        },
+      };
+      const result = NewHospitalValidation.safeParse(obj);
+      if (!result.success) {
+        const errors = JSON.parse(result.error.message);
+        setError(`${errors[0].path[0]} : ${errors[0].message}`);
+        return;
+      } else {
+        EntryObj = obj as HospitalEntry;
+      }
     } else {
+      const obj: Record<string, any> = {
+        date: dateRef?.current?.value,
+        specialist: SpecialistRef?.current?.value,
+        type,
+        description: DescriptionRef?.current?.value,
+        employerName: employerRef?.current?.value,
+      };
+
+      if (sickFromRef?.current?.value) {
+        obj.sickLeave = {
+          startDate: sickFromRef?.current.value,
+          endDate: sickToRef?.current?.value,
+        };
+      }
+
+      const result = NewOccupationalValidation.safeParse(obj);
+      if (!result.success) {
+        const errors = JSON.parse(result.error.message);
+        setError(`${errors[0].path[0]} : ${errors[0].message}`);
+        return;
+      } else {
+        EntryObj = obj as OccupationalHealthcareEntry;
+      }
+    }
+    if (diagnosisRef.current?.value) {
       const selectedDiagnoseCodes = diagnosisRef.current?.value
         .split(",")
         .map((e) => e.trim());
-      if (selectedDiagnoseCodes) {
-        selectedDiagnoseCodes.forEach((e) => {
-          if (!diagnosesCodes.includes(e)) {
+      if (selectedDiagnoseCodes.length > 0) {
+        console.log(selectedDiagnoseCodes);
+        for (let index = 0; index < selectedDiagnoseCodes.length; index++) {
+          const element = selectedDiagnoseCodes[index];
+          if (!diagnosesCodes.includes(element)) {
             setError("Invalid Diagnoses code");
+            return;
           }
-        });
-      }
-      if (error) {
-        return;
-      }
-      try {
-        const data = await patients.createNewEntry(patientId, obj);
-        onData(data);
-      } catch (e) {
-        if (e instanceof AxiosError) {
-          setError(e.message);
         }
+      }
+      EntryObj.diagnosisCodes = selectedDiagnoseCodes;
+    }
+
+    try {
+      const data = await patients.createNewEntry(patientId, EntryObj);
+      onData(data);
+    } catch (e) {
+      if (e instanceof AxiosError) {
+        setError(e.message);
+      } else {
+        setError("Something went wrong");
       }
     }
   }
 
+  function handleDropDownChange(event: SelectChangeEvent) {
+    if (EntryTuple.includes(event.target.value)) {
+      const v = event.target.value as EntryTypes;
+      setType(v);
+    }
+  }
   return (
     <div className="form-border">
-      <h3>New HealthCheck Entry</h3>
+      <h3>New Entry Form</h3>
       {error && (
         <Alert severity="error" variant="filled">
           {error}
         </Alert>
       )}
+      <div>
+        <InputLabel id="entry-label">Entry Type</InputLabel>
+        <Select
+          fullWidth
+          labelId="entry-label"
+          value={type}
+          onChange={handleDropDownChange}
+        >
+          <MenuItem value="HealthCheck">Health Check</MenuItem>
+          <MenuItem value="Hospital">Hospital</MenuItem>
+          <MenuItem value="OccupationalHealthcare">
+            Occupational Healthcare
+          </MenuItem>
+        </Select>
+      </div>
       <div>
         <InputLabel>Description</InputLabel>
         <Input fullWidth type="text" inputRef={DescriptionRef}></Input>
@@ -89,10 +194,42 @@ export default function NewEntryForm({
         <InputLabel>Specialist</InputLabel>
         <Input fullWidth type="text" inputRef={SpecialistRef}></Input>
       </div>
-      <div>
-        <InputLabel>HealthCheck Rating</InputLabel>
-        <Input fullWidth type="number" inputRef={healthRef}></Input>
-      </div>
+      {type === "HealthCheck" && (
+        <div>
+          <InputLabel>HealthCheck Rating</InputLabel>
+          <Input fullWidth type="number" inputRef={healthRef}></Input>
+        </div>
+      )}
+
+      {type === "Hospital" && (
+        <>
+          <div>
+            <InputLabel>Discharge Date</InputLabel>
+            <Input fullWidth type="date" inputRef={dischargeRef}></Input>
+          </div>
+          <div>
+            <InputLabel>Discharge Criteria</InputLabel>
+            <Input fullWidth type="text" inputRef={criteriaRef}></Input>
+          </div>
+        </>
+      )}
+
+      {type === "OccupationalHealthcare" && (
+        <>
+          <div>
+            <InputLabel>Employer Name</InputLabel>
+            <Input fullWidth type="text" inputRef={employerRef}></Input>
+          </div>
+          <div>
+            <InputLabel>Sick Leave From</InputLabel>
+            <Input fullWidth type="date" inputRef={sickFromRef}></Input>
+          </div>
+          <div>
+            <InputLabel>Sick Leave To</InputLabel>
+            <Input fullWidth type="date" inputRef={sickToRef}></Input>
+          </div>
+        </>
+      )}
       <div>
         <InputLabel>Diagnosis Codes</InputLabel>
         <Input fullWidth type="text" inputRef={diagnosisRef}></Input>
