@@ -13,7 +13,7 @@ This is my submission for the Fullstack Open course, a comprehensive online cour
 - [x] Part 6 - Advanced state management
 - [x] Part 7 - React router, custom hooks, styling app wiPh CSS and webpack
 - [x] Part 8 - GraphQL
-- [ ] Part 9 - TypeScript
+- [x] Part 9 - TypeScript
 - [ ] Part 10 - React Native
 - [ ] Part 11 - CI/CD
 - [ ] Part 12 - Containers
